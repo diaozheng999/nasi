@@ -1,0 +1,48 @@
+{
+  "name": "nasi",
+  "version": "1.0.0",
+  "description": "Common JS/TypeScript API",
+  "main": "dist/cjs/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "clean": "rm -rf dist && python build_tools/barrel.py clean",
+    "prebuild": "npm run clean && python build_tools/barrel.py",
+    "build": "tsc",
+    "postbuild": "rollup -c rollup.config.js",
+    "test": "jest",
+    "lint": "tslint --project .",
+    "prepublishOnly": "npm run lint && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/diaozheng999/nasi"
+  },
+  "module": "dist/esm/index.js",
+  "author": "My M1 App Team",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.15",
+    "rollup-plugin-terser": "^5.1.2",
+    "splaytree": "^3.0.1",
+    "tslib": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "@types/lodash": "^4.14.141",
+    "jest": "^24.9.0",
+    "rollup": "^1.23.1",
+    "terser": "^4.3.8",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.0",
+    "tslint-no-focused-test": "^0.5.0",
+    "typescript": "^3.6.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "globals": {
+      "__DEV__": true
+    }
+  }
+}

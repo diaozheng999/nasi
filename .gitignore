@@ -1,0 +1,8 @@
+**/node_modules
+.DS_Store
+**/dist
+**/src/**/index.ts
+**/coverage
+
+.vscode
+*.code-workspace
