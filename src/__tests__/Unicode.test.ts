@@ -3,7 +3,16 @@
  * @author Flash
  * @file test files for Unicode
  */
+import * as Contract from "../Contract";
 import * as Unicode from "../Unicode";
+
+beforeEach(() => {
+  Contract.dismissContractMessages(/Should be ASCII small letter/);
+});
+
+afterEach(() => {
+  Contract.restoreContractMessages();
+});
 
 test("getUnicodeByAlphabet from a", () => {
   expect(Unicode.getUnicodeByAlphabet("a")).toBe("🇦");

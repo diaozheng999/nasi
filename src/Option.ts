@@ -254,6 +254,68 @@ export function choice<T>(opt: Option<unknown>, ifSome: T, ifNone: T): T {
   return ifNone;
 }
 
+/**
+ * Choose a value to return depending on if option is some value.
+ *
+ * This is equivalent to:
+ * ```
+ * Option.value(Option.map(opt, ifSome), ifNone);
+ * ```
+ *
+ * @param opt an option
+ * @param ifSome a function that executes if option is Some(_)
+ * @param ifNone the default return value
+ */
+export function mapChoice<T, U>(
+  opt: Option<T>,
+  ifSome: (value: T) => U,
+  ifNone: U,
+): U {
+  if (isSome(opt)) {
+    return ifSome(opt);
+  }
+  return ifNone;
+}
+
+/**
+ * Chooses a value to return depending on if option is some value.
+ *
+ * This is similar to `mapChoice` except `ifNone` is evaluated lazily.
+ *
+ * @param opt an option
+ * @param ifSome a function that executes if option is Some(_)
+ * @param ifNone a function that executes if option is None
+ */
+export function mapChoice_<T, U>(
+  opt: Option<T>,
+  ifSome: (value: T) => U,
+  ifNone: () => U,
+): U {
+  if (isSome(opt)) {
+    return ifSome(opt);
+  }
+  return ifNone();
+}
+
+/**
+ * Returns true iff both options have values, and comparison function returns
+ * true.
+ *
+ * @param opt1 First optional value
+ * @param opt2 Second optional value
+ * @param comparison comparison function
+ */
+export function compareSome<T, U>(
+  opt1: Option<T>,
+  opt2: Option<U>,
+  comparison: (val1: T, val2: U) => boolean,
+): boolean {
+  if (isSome(opt1) && isSome(opt2)) {
+    return comparison(opt1, opt2);
+  }
+  return false;
+}
+
 export function assertSome<T>(
   opt: Option<T>,
   screenName?: string,

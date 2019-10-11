@@ -10,7 +10,8 @@
  * @barrel export isSerialisable
  */
 
-let shouldBypass = false;
+let shouldBypass: boolean = false;
+let shouldBypassMessages: boolean | RegExp = false;
 
 export function bypassContractChecks() {
   shouldBypass = true;
@@ -18,6 +19,21 @@ export function bypassContractChecks() {
 
 export function restoreContractChecks() {
   shouldBypass = false;
+}
+
+export function dismissContractMessages(message?: RegExp) {
+  shouldBypassMessages = message || true;
+}
+
+export function restoreContractMessages() {
+  shouldBypassMessages = false;
+}
+
+function shouldDisplayContractMessage(message: string): boolean {
+  if (typeof shouldBypassMessages === "boolean") {
+    return !shouldBypassMessages;
+  }
+  return !message.match(shouldBypassMessages);
 }
 
  /**
@@ -42,9 +58,11 @@ export function invariant(
     const errorMessage = message || `Invariant failed: ${inv.toString()}`;
     if (shouldFail !== false) {
       // red box in case error gets caught
-      console.error(errorMessage);
+      if (shouldDisplayContractMessage(errorMessage)) {
+        console.error(errorMessage);
+      }
       throw new TypeError(errorMessage);
-    } else {
+    } else if (shouldDisplayContractMessage(errorMessage)) {
       // yellow box
       console.warn(errorMessage);
     }

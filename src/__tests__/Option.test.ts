@@ -497,3 +497,124 @@ describe("option execute", () => {
   });
 
 });
+
+describe("mapChoice", () => {
+  test("if value is some, the result is returned", () => {
+    const opt = { b: 2 };
+    const truth = { a: 0 };
+    const lie = { a: 2 };
+    const mapper = jest.fn(() => truth);
+    const result = Option.mapChoice(opt, mapper, lie);
+    expect(result).toBe(truth);
+    expect(result).not.toBe(lie);
+  });
+
+  test("if value is some, the executor is called", () => {
+    const opt = { b: 2 };
+    const truth = { a: 0 };
+    const lie = { a: 2 };
+    const mapper = jest.fn(() => truth);
+    const result = Option.mapChoice(opt, mapper, lie);
+    expect(result).toBe(truth);
+    expect(mapper).toBeCalled();
+    expect(mapper).toBeCalledWith(opt);
+  });
+
+  test("if value is none, the fallback is returned", () => {
+    const opt = undefined;
+    const truth = { a: 0 };
+    const lie = { a: 2 };
+    const mapper = jest.fn(() => truth);
+    const result = Option.mapChoice(opt, mapper, lie);
+    expect(result).not.toBe(truth);
+    expect(result).toBe(lie);
+  });
+
+  test("if value is some, the executor is not called", () => {
+    const opt = undefined;
+    const truth = { a: 0 };
+    const lie = { a: 2 };
+    const mapper = jest.fn(() => truth);
+    const result = Option.mapChoice(opt, mapper, lie);
+    expect(result).toBe(lie);
+    expect(mapper).not.toBeCalled();
+  });
+});
+
+describe("mapChoice_", () => {
+  test("if value is some, the result is returned", () => {
+    const opt = { b: 2 };
+    const truth = { a: 0 };
+    const lie = { a: 2 };
+    const mapper = jest.fn(() => truth);
+    const liar = jest.fn(() => lie);
+    const result = Option.mapChoice_(opt, mapper, liar);
+    expect(result).toBe(truth);
+    expect(result).not.toBe(lie);
+  });
+
+  test("if value is some, the executor is called", () => {
+    const opt = { b: 2 };
+    const truth = { a: 0 };
+    const lie = { a: 2 };
+    const mapper = jest.fn(() => truth);
+    const liar = jest.fn(() => lie);
+    const result = Option.mapChoice_(opt, mapper, liar);
+    expect(result).toBe(truth);
+    expect(mapper).toBeCalled();
+    expect(mapper).toBeCalledWith(opt);
+    expect(liar).not.toBeCalled();
+  });
+
+  test("if value is none, the fallback is returned", () => {
+    const opt = undefined;
+    const truth = { a: 0 };
+    const lie = { a: 2 };
+    const mapper = jest.fn(() => truth);
+    const liar = jest.fn(() => lie);
+    const result = Option.mapChoice_(opt, mapper, liar);
+    expect(result).not.toBe(truth);
+    expect(result).toBe(lie);
+  });
+
+  test("if value is some, the executor is not called", () => {
+    const opt = undefined;
+    const truth = { a: 0 };
+    const lie = { a: 2 };
+    const mapper = jest.fn(() => truth);
+    const liar = jest.fn(() => lie);
+    const result = Option.mapChoice_(opt, mapper, liar);
+    expect(result).toBe(lie);
+    expect(mapper).not.toBeCalled();
+    expect(liar).toBeCalled();
+  });
+});
+
+describe("compareSome", () => {
+  test("both undefined, comparison function not called", () => {
+    const comparison = jest.fn(() => true);
+    expect(Option.compareSome(undefined, undefined, comparison)).toBe(false);
+    expect(comparison).not.toBeCalled();
+  });
+
+  test("left undefined, comparison function not called", () => {
+    const comparison = jest.fn(() => true);
+    expect(Option.compareSome(undefined, 1, comparison)).toBe(false);
+    expect(comparison).not.toBeCalled();
+  });
+
+  test("right undefined, comparison function not called", () => {
+    const comparison = jest.fn(() => true);
+    expect(Option.compareSome(2, undefined, comparison)).toBe(false);
+    expect(comparison).not.toBeCalled();
+  });
+
+  test("both defined, comparison called", () => {
+    const left = 3;
+    const right = 5;
+    const comparison = jest.fn(() => true);
+    expect(Option.compareSome(left, right, comparison)).toBe(true);
+    expect(comparison).toBeCalled();
+    expect(comparison).toBeCalledWith(left, right);
+  });
+});

@@ -42,7 +42,7 @@ IGNORED_DIRECTORIES = [
 
 
 def clean(directory):
-  print "Cleaning %s"%directory
+  print("Cleaning %s"%directory)
   files = os.listdir(directory)
 
   clean_directory = False
@@ -63,7 +63,7 @@ def clean(directory):
 
 
 def barrel(directory, prefix=""):
-  print "Barrelling %s"%directory
+  print("Barrelling %s"%directory)
 
   files = os.listdir(directory)
   barrel_directory = True
@@ -91,7 +91,7 @@ def barrel(directory, prefix=""):
       filename.endswith(".ts") or
       filename.endswith(".tsx")
     )) or filename in IGNORED_DIRECTORIES:
-      print "Skipping %s"%filename
+      print("Skipping %s"%filename)
       continue
 
     if filename != "index.ts":
@@ -174,7 +174,7 @@ def barrel(directory, prefix=""):
       else:
         to_import = "import {%s} from \"./%s\";"%(importstr, obj)
 
-      to_import_lines = to_import.split("\n");
+      to_import_lines = to_import.split("\n")
 
       for line in to_import_lines:
         if (len(line) > 80):
@@ -198,7 +198,7 @@ def barrel(directory, prefix=""):
     export_list = sorted(export_list, key=lambda x: x.lower())
     exports += "".join([("  " + s + ",\n") for s in export_list]) + "};\n"
 
-    export_consts = (export_consts + "\n") if export_consts else export_consts;
+    export_consts = (export_consts + "\n") if export_consts else export_consts
 
     with open(directory+"/index.ts", "w") as f:
       f.write(index_ts)
@@ -218,11 +218,6 @@ def barrel(directory, prefix=""):
     return False
 
   return True
-
-
-
-  
-
 
 if __name__ == "__main__":
   import sys
