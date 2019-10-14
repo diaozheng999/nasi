@@ -5,9 +5,7 @@
  * @barrel export all
  */
 
-declare var __DEV__: boolean;
-
-let inDevMode = __DEV__ || false;
+let inDevMode = false;
 
 export function setDevMode(mode: boolean) {
   inDevMode = mode;
