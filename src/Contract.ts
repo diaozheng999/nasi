@@ -10,6 +10,8 @@
  * @barrel export isSerialisable
  */
 
+import { devOnly, select } from "./Dev";
+
 let shouldBypass: boolean = false;
 let shouldBypassMessages: boolean | RegExp = false;
 
@@ -53,7 +55,15 @@ export function invariant(
   message?: string,
   shouldFail?: boolean,
 ) {
-  if (__DEV__ && !shouldBypass && !inv()) {
+  devOnly(invariantInDev, inv, message, shouldFail);
+}
+
+export function invariantInDev(
+  inv: () => boolean,
+  message?: string,
+  shouldFail?: boolean,
+) {
+  if (!shouldBypass && !inv()) {
     // tslint:disable:no-console
     const errorMessage = message || `Invariant failed: ${inv.toString()}`;
     if (shouldFail !== false) {
@@ -88,7 +98,7 @@ export function requires<T extends {}, Args extends any[]>(
     propertyKey: string,
     descriptor?: TypedPropertyDescriptor<(...args: Args) => Return>,
   ): TypedPropertyDescriptor<(...args: Args) => Return> | void => {
-    if (__DEV__) {
+    return select(() => {
       const wrapPrecondition = (f: (...args: Args) => Return) =>
       function(this: T, ...args: Args) {
         invariant(
@@ -113,8 +123,10 @@ export function requires<T extends {}, Args extends any[]>(
         }
         return contract;
       }
-    }
-    return descriptor;
+      return descriptor;
+    }, () => {
+      return descriptor;
+    });
   };
 }
 /**
@@ -135,7 +147,7 @@ export function ensures<T extends {}, Return>(
     propertyKey: string,
     descriptor?: TypedPropertyDescriptor<(...args: Args) => Return>,
   ): TypedPropertyDescriptor<(...args: Args) => Return> | void => {
-    if (__DEV__) {
+    return select(() => {
       const wrapPostcondition = (f: (...args: Args) => Return) =>
       function(this: T, ...args: Args) {
         const returnValue = f.call(this, ...args);
@@ -160,8 +172,10 @@ export function ensures<T extends {}, Return>(
         }
         return contract;
       }
-    }
-    return descriptor;
+      return descriptor;
+    }, () => {
+      return descriptor;
+    });
   };
 }
 
@@ -180,10 +194,10 @@ export function ensures<T extends {}, Return>(
  */
 export function assertNever(x: never): never
 {
-  if (__DEV__) {
+  devOnly(() => {
     // tslint:disable-next-line: no-console
     console.warn(`Assertion Failure: Unexpected object ${x}.`);
-  }
+  });
   throw new Error(`Unexpected object: ${x}.`);
 }
 

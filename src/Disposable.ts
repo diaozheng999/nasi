@@ -4,6 +4,8 @@
  * @file Represents an object that can be disposed once.
  */
 
+import { devOnly } from "./Dev";
+
 export class Disposable {
   private disposed: boolean = false;
   private disposeFunction: () => void;
@@ -19,11 +21,13 @@ export class Disposable {
     if (!this.disposed) {
       this.disposed = true;
       this.disposeFunction();
-    } else if (__DEV__) {
-      // tslint:disable-next-line: no-console
-      console.warn(
-        `Disposable: trying to call dispose() on an already disposed object.`,
-      );
+    } else {
+      devOnly(() => {
+        // tslint:disable-next-line: no-console
+        console.warn(
+          `Disposable: trying to call dispose() on an already disposed object.`,
+        );
+      });
     }
   }
 

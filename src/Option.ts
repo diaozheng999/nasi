@@ -10,6 +10,7 @@
  */
 
 import { assertNever as newAssertNever } from "./Contract";
+import { devOnly } from "./Dev";
 
 type Option<T> = T | undefined;
 
@@ -321,11 +322,13 @@ export function assertSome<T>(
   screenName?: string,
 ): T
 {
-  if (__DEV__ && isNone(opt)) {
-    const name = screenName ? ` ${screenName}` : "";
-    // tslint:disable-next-line:no-console
-    console.warn(`Assertion Failure: Field${name} does not contain a value.`);
-  }
+  devOnly(() => {
+    if (isNone(opt)) {
+      const name = screenName ? ` ${screenName}` : "";
+      // tslint:disable-next-line:no-console
+      console.warn(`Assertion Failure: Field${name} does not contain a value.`);
+    }
+  });
   return opt as T;
 }
 
@@ -345,12 +348,12 @@ export function assertSome<T>(
  */
 export function assertNever(x: never): never
 {
-  if (__DEV__) {
+  devOnly(() => {
     // tslint:disable-next-line: no-console
     console.warn(
       `Option.assertNever is deprecated. Use Contract.assertNever instead.`,
     );
-  }
+  });
   return newAssertNever(x);
 }
 

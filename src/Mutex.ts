@@ -5,6 +5,7 @@
  * @barrel export Lock
  */
 
+import { devOnly } from "./Dev";
 import { Disposable } from "./Disposable";
 import { Semaphore } from "./Semaphore";
 import { Opaque } from "./Types";
@@ -73,7 +74,7 @@ export class Mutex {
   }
 
   private guardedRelease(dependencies: Disposable[]) {
-    if (__DEV__) {
+    devOnly(() => {
       for (const dependency of dependencies) {
         if (dependency.isDisposed) {
           throw new Error(
@@ -82,7 +83,7 @@ export class Mutex {
           );
         }
       }
-    }
+    });
     this.release();
   }
 
