@@ -1,8 +1,12 @@
+## 1.1.2
+
+- Moved dependency `rollup-plugin-terser` to devDependency.
+
 ## 1.1.1
 
 - Added flexibility for `Dev` to include other forms of development variables, not only the React Native `__DEV__` variable.
 - Added new functions in `Dev` module to execute code in dev-mode only.
-- Removed `build_tools` from npm package
+- Removed `build_tools` from npm package.
 
 ## 1.1.0
 

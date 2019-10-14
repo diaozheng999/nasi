@@ -22,7 +22,6 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.15",
-    "rollup-plugin-terser": "^5.1.2",
     "splaytree": "^3.0.1",
     "tslib": "^1.10.0"
   },
@@ -31,6 +30,7 @@
     "@types/lodash": "^4.14.141",
     "jest": "^24.9.0",
     "rollup": "^1.23.1",
+    "rollup-plugin-terser": "^5.1.2",
     "terser": "^4.3.8",
     "ts-jest": "^24.1.0",
     "tslint": "^5.20.0",
