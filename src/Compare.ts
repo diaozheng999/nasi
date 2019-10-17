@@ -4,6 +4,8 @@
  * @file functions for comparison
  */
 
+// @barrel export all
+
 import _ from "lodash";
 import { isNone, isSome, Type as Option, wrapNotNaN } from "./Option";
 
