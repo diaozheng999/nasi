@@ -1,3 +1,8 @@
+## 1.1.3
+
+- Fixed a bug with `Option.property` returning `undefined` instead of default value.
+- [Unstable] Added basic comparators.
+
 ## 1.1.2
 
 - Moved dependency `rollup-plugin-terser` to devDependency.

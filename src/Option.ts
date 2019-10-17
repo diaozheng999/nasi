@@ -372,7 +372,7 @@ export function property<T extends {}, K extends keyof T>(
   defaultValue?: T[K],
 ): Option<T[K]> {
   if (isSome(opt)) {
-    return opt[key];
+    return value(opt[key], defaultValue);
   }
   return defaultValue;
 }
