@@ -1,3 +1,8 @@
+## 1.1.5
+
+- Added `Box` for boxed mutable variables, similar to React refs.
+- Added `LinkedList` as a doubly-linked list implementation.
+
 ## 1.1.4
 
 - `Disposable`: Added custom disposables and ability for disposables to guard multiple invocations of custom disposables.
