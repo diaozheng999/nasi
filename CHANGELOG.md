@@ -1,3 +1,7 @@
+## 1.1.4
+
+- `Disposable`: Added custom disposables and ability for disposables to guard multiple invocations of custom disposables.
+
 ## 1.1.3
 
 - Fixed a bug with `Option.property` returning `undefined` instead of default value.
