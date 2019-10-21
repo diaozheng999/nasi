@@ -1,3 +1,7 @@
+## 1.1.6
+
+- `Option`: added type `Some` for value assertion.
+
 ## 1.1.5
 
 - Added `Box` for boxed mutable variables, similar to React refs.

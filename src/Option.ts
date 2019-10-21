@@ -23,6 +23,24 @@ export type Type<T> = Option<T>;
 export type Nullable<T> = T | null;
 
 /**
+ * Asserts the value type of T.
+ *
+ * E.g. `Option.Some<Option.Type<string>>` resolves to `string`.
+ *
+ * This makes use of the fact that conditional types are distributed across
+ * unions and intersections.
+ *
+ * As a result, note this edge case:
+ * `Option.Some<Option.Type<undefined>>` resolves to `never`
+ */
+export type Some<T> =
+  T extends undefined ?
+    never
+  :
+    T
+;
+
+/**
  * returns true iff option is Some(value)
  * @param opt option
  */
