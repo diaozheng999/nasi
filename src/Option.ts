@@ -23,7 +23,7 @@ export type Type<T> = Option<T>;
 export type Nullable<T> = T | null;
 
 /**
- * Asserts the value type of T.
+ * Asserts the value type of T, where `T` is constructed as `Option.Type`.
  *
  * E.g. `Option.Some<Option.Type<string>>` resolves to `string`.
  *
@@ -35,6 +35,30 @@ export type Nullable<T> = T | null;
  */
 export type Some<T> =
   T extends undefined ?
+    never
+  :
+    T
+;
+/**
+ * Asserts the value type of T, where T is constructed as `Option.Nullable`.
+ *
+ * E.g. `Option.NotNull<Option.Nullable<string>>` resolves to `string`.
+ *
+ * This makes use of the fact that conditional types are distributed across
+ * unions and intersections.
+ *
+ * As a result, note thess edge cases:
+ * - `Option.NotNull<Option.Type<undefined>>` resolves to `never`
+ * - `Option.NotNull<Option.Type<null>>` resolves to `never`
+ * - `Option.NotNull<Option.Nullable<undefined>>` resolves to `never`
+ * - `Option.NotNull<undefined>` resolves to `never`
+ *
+ * Additionally, this is a less stringent type check than `Some`, so in most
+ * cases, where `null` is not part of the type `T`, we get
+ * `Option.NotNull<Option.Type<T>>` resolving to `T`.
+ */
+export type NotNull<T> =
+  T extends undefined | null ?
     never
   :
     T

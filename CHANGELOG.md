@@ -1,3 +1,7 @@
+## 1.1.7
+
+- `Option`: added type `NotNull` for value assertion.
+
 ## 1.1.6
 
 - `Option`: added type `Some` for value assertion.
