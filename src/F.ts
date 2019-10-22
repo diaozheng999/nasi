@@ -6,7 +6,7 @@
 
 // @barrel export all
 
-import { value_ } from "./Option";
+import { isNone, Type as Option, value_ } from "./Option";
 
 type Func<TArgs extends any[], TReturn> = (...args: TArgs) => TReturn;
 
@@ -19,9 +19,11 @@ const CHAIN_TAIL = Symbol("nasi/CHAIN_TAIL");
 
 const MEMO = Symbol("nasi/MEMO");
 
+const UNIT = Symbol("nasi/UNIT");
+
 export type MemoisedFunc<TArgs extends any[], TReturn> =
   Func<TArgs, TReturn> & {
-    [MEMO]: Map<TArgs, TReturn>;
+    [MEMO]: Map<unknown, unknown>;
   };
 
 type ChainedFunc<TArgs extends any[], TIntermediate, TReturn> =
@@ -89,17 +91,53 @@ export function pipe<TArgs extends any[], TIntermediate, TReturn>(
   return chain(f1, f2);
 }
 
+function getMap<TArgs extends any[], TReturn>(
+  memoised: Map<any, any>,
+  args: TArgs,
+): Map<typeof UNIT, TReturn> {
+  let current = memoised;
+
+  for (const arg of args) {
+    const staged = current.get(arg);
+    if (isNone(staged)) {
+      const newMap = new Map();
+      current.set(arg, newMap);
+      current = newMap;
+    } else {
+      current = staged;
+    }
+  }
+
+  return current;
+}
+
+function getFromMemoisation<TArgs extends any[], TReturn>(
+  memoised: Map<any, any>,
+  args: TArgs,
+): Option<TReturn> {
+  const map = getMap<TArgs, TReturn>(memoised, args);
+  return map.get(UNIT);
+}
+
+function updateMemoisation<TArgs extends any[], TReturn>(
+  memoised: Map<any, any>,
+  args: TArgs,
+  value: TReturn,
+) {
+  const map = getMap<TArgs, TReturn>(memoised, args);
+  return map.set(UNIT, value);
+}
+
 function memoisedExecutor<TArgs extends any[], TReturn>(
   memoised: Map<TArgs, TReturn>,
   func: Func<TArgs, TReturn>,
   ...args: TArgs
 ): TReturn {
-  console.warn(args, memoised);
   return value_(
-    memoised.get(args),
+    getFromMemoisation(memoised, args),
     () => {
       const result = func(...args);
-      memoised.set(args, result);
+      updateMemoisation(memoised, args, result);
       return result;
     },
   );
@@ -109,7 +147,6 @@ export function memoise<TArgs extends any[], TReturn>(
   func: Func<TArgs, TReturn>,
 ): MemoisedFunc<TArgs, TReturn> {
   if (!isMemoised(func)) {
-    console.warn("memoising");
     const memo = new Map<TArgs, TReturn>();
     const memoised: any = memoisedExecutor.bind<
       any,
@@ -122,4 +159,22 @@ export function memoise<TArgs extends any[], TReturn>(
     return memoised;
   }
   return func;
+}
+
+export function curry<T1, TArgs extends any[], TReturn>(
+  f: (arg0: T1, ...args: TArgs) => TReturn,
+): Func<[T1], Func<TArgs, TReturn>> {
+  return (arg0) => (...rest) => f(arg0, ...rest);
+}
+
+export function curry2<T0, T1, TArgs extends any[], TReturn>(
+  f: (arg0: T0, arg1: T1, ...args: TArgs) => TReturn,
+): Func<[T0, T1], Func<TArgs, TReturn>> {
+  return (arg0, arg1) => (...rest) => f(arg0, arg1, ...rest);
+}
+
+export function curryRight<T0, T1, TArgs extends any[], TReturn>(
+  f: (arg0: T0, arg1: T1, ...args: TArgs) => TReturn,
+): Func<[T1], (arg0: T0, ...args: TArgs) => TReturn> {
+  return (arg1) => (arg0, ...rest) => f(arg0, arg1, ...rest);
 }

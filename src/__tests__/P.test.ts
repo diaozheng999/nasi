@@ -267,5 +267,5 @@ test("pred", () => {
 
   expect(p(10)).toBe(true);
   expect(p(10)).toBe(true);
-  expect(predicate).toBeCalledTimes(1);
+  expect(predicate).toBeCalledTimes(2);
 });

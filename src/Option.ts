@@ -73,7 +73,6 @@ export function isSome<T extends {}, K extends string | number | symbol>(
 ): opt is T;
 export function isSome<T>(opt: Option<T>): opt is T;
 export function isSome<T>(opt: Option<T>): opt is T {
-  console.warn("beebee");
   return opt !== undefined;
 }
 
@@ -124,7 +123,6 @@ export function value_<T, TDefaultArguments extends any[]>(
   ...defaultParams: TDefaultArguments
 ): T {
   if (isSome(opt)) {
-    console.warn("Boo");
     return opt;
   }
   return defaultValue(...defaultParams);
