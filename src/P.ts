@@ -5,10 +5,10 @@
  */
 
 // @barrel export all
-import * as Types from "./Types";
+import _ from "lodash";
 import * as F from "./F";
-import _ from 'lodash';
 import * as Option from "./Option";
+import * as Types from "./Types";
 
 type Predicate<T> = ((arg: T) => boolean);
 type TypedPredicate<T, Q extends T> = (arg: T) => arg is Q;
@@ -27,7 +27,7 @@ type ConjunctionPredicate<T> = Predicate<T> & {
 };
 type DisjunctionPredicate<T> = Predicate<T> & {
   [DISJUNCTION]: Array<Predicate<T>>;
-}
+};
 
 function isNegatable<T>(p: Predicate<T>): p is NegatedPredicate<T> {
   return p.hasOwnProperty(NEGATE);
@@ -41,21 +41,24 @@ function isDisjunction<T>(p: Predicate<T>): p is DisjunctionPredicate<T> {
   return p.hasOwnProperty(DISJUNCTION);
 }
 
-export function never(_: any): boolean {
+export function never(__: any): boolean {
   return false;
 }
 
-export function always(_: any): boolean {
+export function always(__: any): boolean {
   return true;
 }
 
 export function is<T>(obj: T): Predicate<T> {
-  return (other) => other === obj;
+  return (other) => Object.is(other, obj);
+}
+
+export function eq<T>(obj: T): Predicate<T> {
+  return (other) => obj === other;
 }
 
 export function matches(regex: RegExp): Predicate<string> {
-  const compiled = regex.compile();
-  return (s: string) => compiled.test(s);
+  return (s: string) => regex.test(s);
 }
 
 export function not<T, Q extends T>(
@@ -88,11 +91,11 @@ export function not<T>(predicate: Predicate<T>): Predicate<T> {
 }
 
 function boundConjunctionExecutor<T>(
-  this: ConjunctionPredicate<T>,
+  predicates: Array<Predicate<T>>,
   arg: T,
 ): boolean {
-  for (const pred of this[CONJUNCTION]) {
-    if (!pred(arg)) {
+  for (const predicate of predicates) {
+    if (!predicate(arg)) {
       return false;
     }
   }
@@ -100,11 +103,11 @@ function boundConjunctionExecutor<T>(
 }
 
 function boundDisjunctionExecutor<T>(
-  this: DisjunctionPredicate<T>,
+  predicates: Array<Predicate<T>>,
   arg: T,
 ): boolean {
-  for (const pred of this[DISJUNCTION]) {
-    if (pred(arg)) {
+  for (const predicate of predicates) {
+    if (predicate(arg)) {
       return true;
     }
   }
@@ -127,7 +130,12 @@ export function and<T>(...predicates: Array<Predicate<T>>): Predicate<T> {
   }
 
   let conjunction: any;
-  conjunction = boundConjunctionExecutor.bind(conjunction!);
+  conjunction = boundConjunctionExecutor.bind<
+    unknown,
+    Array<Predicate<T>>,
+    [T],
+    boolean
+  >(undefined, _.uniq(filtered));
   conjunction[CONJUNCTION] = filtered;
 
   return conjunction;
@@ -149,13 +157,25 @@ export function or<T>(...predicates: Array<Predicate<T>>): Predicate<T> {
   }
 
   let disjunction: any;
-  disjunction = boundDisjunctionExecutor.bind(disjunction!);
+  disjunction = boundDisjunctionExecutor.bind<
+    unknown,
+    Array<Predicate<T>>,
+    [T],
+    boolean
+  >(undefined, _.uniq(filtered));
   disjunction[DISJUNCTION] = filtered;
 
   return disjunction;
 }
 
 export function infer<T>(
+  precedant: Predicate<T>,
+  antecedent: Predicate<T>,
+): Predicate<T> {
+  return or(not(precedant), antecedent);
+}
+
+export function branch<T>(
   predicate: Predicate<T>,
   ifTrue: Predicate<T>,
   ifFalse: Predicate<T>,
@@ -169,7 +189,7 @@ export function infer<T>(
   };
 }
 export function exists<T extends {}>(key: keyof T): Predicate<T> {
-  return (obj: T) => _.has(obj, key);
+  return (obj: T) => Option.isSome(Option.property(obj, key));
 }
 
 export function existsWith<T extends {}, K extends keyof T>(
@@ -181,6 +201,10 @@ export function existsWith<T extends {}, K extends keyof T>(
     predicate,
     false,
   );
+}
+
+export function pred<T>(predicate: Predicate<T>): Predicate<T> {
+  return F.memoise(predicate);
 }
 
 // we set never and always's negations to one another
