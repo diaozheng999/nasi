@@ -1,3 +1,8 @@
+## 1.1.8
+
+- Added `F` for function compositions and other pure function utilities
+- Added `P` for predicate function logic
+
 ## 1.1.7
 
 - `Option`: added type `NotNull` for value assertion.
