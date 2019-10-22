@@ -8,6 +8,7 @@ module.exports = {
   ],
   external: [
     "lodash",
+    "lru-cache",
     "splaytree",
     "tslib",
   ],

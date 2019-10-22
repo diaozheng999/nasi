@@ -1,3 +1,7 @@
+## 1.1.9
+
+- `MemoryCache` uses `lru-cache` instead.
+
 ## 1.1.8
 
 - Added `F` for function compositions and other pure function utilities

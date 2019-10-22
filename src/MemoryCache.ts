@@ -4,7 +4,8 @@
  * @file A simple in-memory cache that stores computed objects and somesuch.
  * @barrel export createMemoryCache
  */
-import SplayTree from "splaytree";
+import LRUCache from "lru-cache";
+import { Disposable, IDisposable } from "./Disposable";
 import * as Hashing from "./Hashing";
 import * as Option from "./Option";
 
@@ -20,28 +21,26 @@ const CACHE_DEFAULT_EXPIRY = 60000;
 export interface ICacheLine<T, K> {
   key: number | K;
   value: T;
-  expiry: number;
 }
 
-class MemoryCacheInternal {
+class MemoryCacheInternal implements IDisposable {
 
   public get currentSize() {
-    return this.cache.size;
+    return this.cache.itemCount;
   }
-  private cache: SplayTree<number, ICacheLine<any, any>>;
-  private maxEntries: number;
-  private trimThreshold: number;
+
+  public [Disposable.Instance] = new Disposable(this.clear.bind(this));
+
+  private cache: LRUCache<number, ICacheLine<any, any>>;
 
   constructor(maxEntries: number) {
-    this.maxEntries = maxEntries;
-    // we amortise the amount to trim such that, as a guarantee, every time
-    // when we perform a trim, the amount we cache is halved. This means that
-    // we only perform the trim function half as often when we do the
-    // insert -> delete -> insert -> delete cycle. This means we lose some
-    // cached data (which is okay since it's a cache anyway), but we don't
-    // overperform the trim operation.
-    this.trimThreshold = maxEntries / 2;
-    this.cache = new SplayTree();
+    this.cache = new LRUCache({
+      max: maxEntries,
+      maxAge: CACHE_DEFAULT_EXPIRY,
+      dispose(__: number, cacheLine: ICacheLine<any, any>) {
+        Disposable.tryDispose(cacheLine.value);
+      },
+    });
   }
 
   /**
@@ -52,8 +51,17 @@ class MemoryCacheInternal {
    * @param expiry if present, the epoch (in ms) that the data will expire.
    * Defaults to 60 seconds from now.
    */
-  public UNSAFE_set<T>(key: number, value: T, expiry?: number) {
-    this.setInternal(key, key, value, expiry);
+  public UNSAFE_set<T>(
+    key: number,
+    value: T,
+    expiry?: number  | { age: number },
+  ) {
+    this.setInternal(
+      key,
+      key,
+      value,
+      this.mapExpiryToAge(expiry),
+    );
   }
 
   /**
@@ -64,8 +72,13 @@ class MemoryCacheInternal {
    * @param expiry if present, the epoch (in ms) that the data will expire.
    * Defaults to 60 seconds from now.
    */
-  public set<T, K>(key: K, value: T, expiry?: number) {
-    this.setInternal(Hashing.hash(key), key, value, expiry);
+  public set<T, K>(key: K, value: T, expiry?: number | { age: number }) {
+    this.setInternal(
+      Hashing.hash(key),
+      key,
+      value,
+      this.mapExpiryToAge(expiry),
+    );
   }
 
   /**
@@ -75,20 +88,7 @@ class MemoryCacheInternal {
    * @param key the precomputed hash
    */
   public UNSAFE_getLine<T>(key: number): Option.Type<ICacheLine<T, any>> {
-    const data = Option.map(
-      Option.truthy(this.cache.find(key)),
-      (node) => node.data,
-    );
-    if (!data) {
-      return;
-    }
-
-    if (data.expiry < new Date().getTime()) {
-      this.cache.remove(key);
-      return;
-    }
-
-    return data;
+    return this.cache.get(key);
   }
 
   public UNSAFE_get<T>(key: number): Option.Type<T> {
@@ -115,15 +115,15 @@ class MemoryCacheInternal {
   }
 
   public clear() {
-    this.cache.clear();
+    this.cache.reset();
   }
 
   public UNSAFE_printAllCacheValues() {
     let output = "";
-    this.cache.forEach((node) => {
+    this.cache.forEach((data, key) => {
       output += (
-        `\nkey: ${node.key} (0x${node.key.toString(16)})\tvalue: ` +
-        JSON.stringify(node.data, undefined, 2) + "\n"
+        `\nkey: ${key} (0x${key.toString(16)})\tvalue: ` +
+        JSON.stringify(data, undefined, 2) + "\n"
       );
     });
     // tslint:disable-next-line: no-console
@@ -133,54 +133,31 @@ class MemoryCacheInternal {
   private constructCacheLine<T, K>(
     key: number | K,
     value: T,
-    expiry?: number,
   ): ICacheLine<T, K> {
-    const finiteExpiry = Option.mapFinite(expiry);
-    if (Option.isSome(finiteExpiry)) {
-      return { expiry: finiteExpiry, key, value };
+    return { key, value };
+  }
+
+  private mapExpiryToAge(expiry?: number | { age: number }) {
+    switch (typeof expiry) {
+      case "object":
+        return expiry.age;
+
+      default:
+        return Option.map(expiry, (n) => n - Date.now());
     }
-    return {
-      expiry: new Date().getTime() + CACHE_DEFAULT_EXPIRY,
-      key,
-      value,
-    };
   }
 
   private setInternal(
     hash: number,
     key: any,
     value: any,
-    expiry?: number,
+    age?: number,
   ) {
-    this.trim();
-    if (this.cache.contains(hash)) {
-      this.cache.remove(hash);
-    }
-    this.cache.add(hash, this.constructCacheLine(key, value, expiry));
-  }
-
-  private trim() {
-    if (this.cache.size < this.maxEntries) {
-      return;
-    }
-    const keysToRemove: number[] = [];
-    let i = 0;
-
-    const currentTime = new Date().getTime();
-
-    this.cache.forEach((node) => {
-      if (node.data.expiry < currentTime) {
-        keysToRemove.push(node.key);
-      }
-
-      if (++i > this.trimThreshold) {
-        keysToRemove.push(node.key);
-      }
-    });
-
-    for (const key of keysToRemove) {
-      this.cache.remove(key);
-    }
+    this.cache.set(
+      hash,
+      this.constructCacheLine(key, value),
+      Option.mapFinite(age),
+    );
   }
 }
 

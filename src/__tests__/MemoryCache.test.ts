@@ -6,6 +6,7 @@
 
 import * as Hashing from "../Hashing";
 import { createMemoryCache } from "../MemoryCache";
+import { createMemoryCacheLegacy } from "../MemoryCacheLegacy";
 
 declare var global: any;
 const memoizedDateConstructor = Date;
@@ -20,6 +21,8 @@ global.Date = function(date?: any) {
   }
   return new memoizedDateConstructor(date);
 };
+
+global.Date.now = () => currentDate;
 
 beforeAll(() => {
   const context = Hashing.getCurrentContext();
@@ -60,8 +63,8 @@ test("unsafe caching", () => {
   expect(cache.currentSize).toBe(0);
 });
 
-test("cache trimming", () => {
-  const cache = createMemoryCache(4);
+test("cache trimming [LEGACY]", () => {
+  const cache = createMemoryCacheLegacy(4);
   cache.set("key1", "value1");
   currentDate += 1000;
   cache.set("key2", "value2");
@@ -77,8 +80,8 @@ test("cache trimming", () => {
   expect(cache.get("key6")).toBe("value5");
 });
 
-test("cache trimming with expiry", () => {
-  const cache = createMemoryCache(4);
+test("cache trimming with expiry [LEGACY]", () => {
+  const cache = createMemoryCacheLegacy(4);
   cache.set("key1", "value1", currentDate);
   currentDate += 1000;
   cache.set("key2", "value2");

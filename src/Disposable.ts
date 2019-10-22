@@ -44,6 +44,19 @@ export class Disposable {
   public static readonly IsDisposed: typeof IS_DISPOSED = IS_DISPOSED;
   public static readonly Instance: typeof DISPOSABLE = DISPOSABLE;
 
+  public static tryDispose(disposable: any) {
+    if (
+      typeof disposable === "object" &&
+      (
+        disposable instanceof Disposable ||
+        disposable.hasOwnProperty(DISPOSE) ||
+        disposable.hasOwnProperty(DISPOSABLE)
+      )
+    ) {
+      Disposable.dispose(disposable);
+    }
+  }
+
   public static dispose(disposable: DisposableType) {
     if (disposable instanceof Disposable) {
       disposable.dispose();
