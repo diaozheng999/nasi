@@ -4,6 +4,11 @@
  * @file Represents a mutable box containing stuff
  */
 
+//
+
+ /**
+  * A container for a reference to something.
+  */
 export class Box<T> {
   public static empty<T>(): Box<T | undefined> {
     return new Box<T | undefined>(undefined);

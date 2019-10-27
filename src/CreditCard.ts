@@ -2,8 +2,9 @@
  * CreditCard.ts
  * @author Diao Zheng
  * @file Defines various utility methods to process Credit Card numbers.
- * @barrel export all
  */
+
+// @barrel export all
 
 /**
  * Indicates a type of credit card that's supported. Currently, this defines
