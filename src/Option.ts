@@ -68,10 +68,6 @@ export type NotNull<T> =
  * returns true iff option is Some(value)
  * @param opt option
  */
-export function isSome<T extends {}, K extends string | number | symbol>(
-  opt: WrappedRecordOption<T, K>,
-): opt is T;
-export function isSome<T>(opt: Option<T>): opt is T;
 export function isSome<T>(opt: Option<T>): opt is T {
   return opt !== undefined;
 }
@@ -359,6 +355,9 @@ export function compareSome<T, U>(
   return false;
 }
 
+/**
+ * @deprecated Prefer the use of `assert(Option.isSome, opt)` instead.
+ */
 export function assertSome<T>(
   opt: Option<T>,
   screenName?: string,
@@ -399,6 +398,9 @@ export function assertNever(x: never): never
   return newAssertNever(x);
 }
 
+/**
+ * @deprecated in TypeScript 3.7 in favour of nil-coelescing operator
+ */
 export function property<T extends {}, K extends keyof T>(
   opt: Option<T>,
   key: K,
@@ -419,6 +421,9 @@ export function property<T extends {}, K extends keyof T>(
   return defaultValue;
 }
 
+/**
+ * @deprecated prefer `f?.(...args)` instead.
+ */
 export function execute<TArgs extends any[]>(
   f: Option<(...args: TArgs) => void>,
   ...args: TArgs

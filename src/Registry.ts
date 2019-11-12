@@ -23,7 +23,7 @@ export class Registry<TKey extends string | number | symbol, TValue> {
     shouldProvideFallback?: boolean,
   ) {
     this.DEFAULT_VALUE = defaultKey;
-    this.shouldProvideFallback = Option.value(shouldProvideFallback, true);
+    this.shouldProvideFallback = shouldProvideFallback ?? true;
 
     if (Option.isSome(defaultValue)) {
       this.registry[defaultKey] = defaultValue;

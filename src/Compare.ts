@@ -37,8 +37,10 @@ export function numeric(a: number, b: number): ComparisonResult {
       return -1;
     }
     return 1;
-  } else if (isNone(wrappedA)) {
+  } else if (isSome(wrappedA) && isNone(wrappedA)) {
     return 1;
+  } else if (isNone(wrappedA) && isSome(wrappedB)) {
+    return -1;
   }
   return 0;
 }

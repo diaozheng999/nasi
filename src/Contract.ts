@@ -3,6 +3,7 @@
  * @author Diao Zheng
  * @file Preconditions, Postconditions and Invariants for development purposes
  * @barrel export all
+ * @barrel export assert
  * @barrel export assertNever
  * @barrel export ensures
  * @barrel export invariant
@@ -24,7 +25,7 @@ export function restoreContractChecks() {
 }
 
 export function dismissContractMessages(message?: RegExp) {
-  shouldBypassMessages = message || true;
+  shouldBypassMessages = message ?? true;
 }
 
 export function restoreContractMessages() {
@@ -36,6 +37,14 @@ function shouldDisplayContractMessage(message: string): boolean {
     return !shouldBypassMessages;
   }
   return !message.match(shouldBypassMessages);
+}
+
+export function assert<T, K extends T>(
+  assertion: (item: T) => item is K,
+  item: T,
+  message?: string,
+): asserts item is K {
+  return invariant(assertion.bind(undefined, item), message);
 }
 
  /**
