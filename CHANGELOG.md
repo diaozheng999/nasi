@@ -3,6 +3,7 @@
 - Update dependency `typescript` to `3.7.2`, include support for TypeScript 3.7 features.
 - Add type `Awaited` to retrieve the realised promise type.
 - Remove `docs` from npm package
+- Add `unwrapJson` to `UnitConversion`.
 
 ## 1.1.9
 
