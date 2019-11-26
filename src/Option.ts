@@ -441,3 +441,18 @@ export function execute<TArgs extends any[], TReturn>(
   }
   return;
 }
+
+export function str(
+  literals: TemplateStringsArray,
+  ...replacer: Array<Option<string>>
+) {
+  let literal = literals[0];
+  for (let i = 0; i < replacer.length; ++i) {
+    if (isSome(replacer[i])) {
+      literal += `${replacer[i]}${literals[i + 1]}`;
+    } else {
+      return undefined;
+    }
+  }
+  return literal;
+}

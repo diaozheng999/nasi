@@ -5,6 +5,7 @@
 - Remove `docs` from npm package
 - Add `unwrapJson` to `UnitConversion`.
 - Add string comparison.
+- Add `Option.str` for template string mapping.
 
 ## 1.1.9
 
