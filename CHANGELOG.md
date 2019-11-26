@@ -4,6 +4,7 @@
 - Add type `Awaited` to retrieve the realised promise type.
 - Remove `docs` from npm package
 - Add `unwrapJson` to `UnitConversion`.
+- Add string comparison.
 
 ## 1.1.9
 
