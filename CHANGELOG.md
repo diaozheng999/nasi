@@ -6,6 +6,7 @@
 - Add `unwrapJson` to `UnitConversion`.
 - Add string comparison.
 - Add `Option.str` for template string mapping.
+- Expose `LinkedList` internal functions.
 
 ## 1.1.9
 
