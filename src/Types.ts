@@ -56,3 +56,15 @@ export type ExcludeKeys<T, K> = Pick<T, Exclude<keyof T, K>>;
 export type Deprecated = "__deprecated__";
 
 export type Not<U, T> = T extends U ? never : U;
+
+/**
+ * The result type of a promise
+ */
+export type Awaited<T> =
+  T extends undefined ?
+    T
+  : T extends PromiseLike<infer U> ?
+    U
+  :
+    T
+;

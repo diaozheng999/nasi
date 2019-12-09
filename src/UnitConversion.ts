@@ -149,3 +149,10 @@ export const integral: Converter = (rawValue: number) => {
     };
   }
 };
+
+export const unwrapJson = (rawValue: number) => {
+  if (!isFinite(rawValue) || rawValue < 0) {
+    return Infinity;
+  }
+  return wrapNegativeZero(rawValue);
+};

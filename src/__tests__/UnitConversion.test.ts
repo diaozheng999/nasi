@@ -305,3 +305,35 @@ describe("convert", () => {
   });
 
 });
+
+describe("unwrapJson", () => {
+  test("NaN", () => {
+    const result = Converter.unwrapJson(NaN);
+    expect(result).toBe(Infinity);
+  });
+
+  test("Infinity", () => {
+    const result = Converter.unwrapJson(Infinity);
+    expect(result).toBe(Infinity);
+  });
+
+  test("Negative", () => {
+    const result = Converter.unwrapJson(-1);
+    expect(result).toBe(Infinity);
+  });
+
+  test("0", () => {
+    const result = Converter.unwrapJson(0);
+    expect(result).toBe(0);
+  });
+
+  test("-0", () => {
+    const result = Converter.unwrapJson(-0);
+    expect(result).toBe(0);
+  });
+
+  test("1", () => {
+    const result = Converter.unwrapJson(1);
+    expect(result).toBe(1);
+  });
+});

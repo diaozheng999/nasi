@@ -13,8 +13,9 @@ type ComparisonResult = -1 | 0 | 1;
 type Comparison<T> = (a: T, b: T) => ComparisonResult;
 
 export type Type<T> = Comparison<T>;
+export type Unordered<T> = (a: T, b: T) => boolean;
 
-function clampToComparison(result: number): ComparisonResult {
+export function clampToComparison(result: number): ComparisonResult {
   if (!result || _.isNaN(result)) {
     return 0;
   }
@@ -37,8 +38,10 @@ export function numeric(a: number, b: number): ComparisonResult {
       return -1;
     }
     return 1;
-  } else if (isNone(wrappedA)) {
+  } else if (isSome(wrappedA) && isNone(wrappedB)) {
     return 1;
+  } else if (isNone(wrappedA) && isSome(wrappedB)) {
+    return -1;
   }
   return 0;
 }
@@ -50,6 +53,27 @@ export function reverse(n: ComparisonResult): ComparisonResult {
 
 export function str(a: string, b: string) {
   return clampToComparison(a.localeCompare(b));
+}
+
+/**
+ * Timing-safe string comparison function.
+ * @see https://snyk.io/blog/node-js-timing-attack-ccc-ctf/
+ * @param a The string to compare against.
+ * @param b The string to compare with.
+ */
+export function strEq(a: string, b: string): boolean {
+  let result = 0;
+  const length = a.length;
+
+  const s1 = a;
+  const s2 = a.length === b.length ? b : a;
+
+  for (let i = 0; i < length; ++i) {
+    // tslint:disable-next-line: no-bitwise
+    result |= (s1.charCodeAt(i) ^ s2.charCodeAt(i));
+  }
+
+  return !(a.length - b.length) && !result;
 }
 
 export function option<T>(
@@ -67,6 +91,10 @@ export function option<T>(
     }
     return 0;
   };
+}
+
+export function unordered<T>(cmp: Comparison<T>): Unordered<T> {
+  return (a, b) => !cmp(a, b);
 }
 
 export function array<T>(cmp: Comparison<T>): Comparison<T[]> {
