@@ -4,8 +4,6 @@
  * @file An Item inside a linked list.
  */
 
-// @barrel ignore
-
 import { isSome, Type as OptionType } from "./Option";
 
 export class LinkedListItem<T> {

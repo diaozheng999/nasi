@@ -19,6 +19,10 @@ export class LinkedList<T> implements Iterable<T> {
     }
   }
 
+  public getHead(): Option<LinkedListItem<T>> {
+    return this.head;
+  }
+
   public push = (value: T) => this.addToEnd(value);
   public pop = () => this.removeFromEnd();
   public shift = () => this.removeFromFront();
