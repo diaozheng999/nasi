@@ -81,3 +81,42 @@ test("list add to end", () => {
   expect(list.shift()).toBe(5);
   expect(list.shift()).toBeUndefined();
 });
+
+test("iterator repetition", () => {
+  const list = new LinkedList();
+  list.push(1);
+  list.push(2);
+  list.push(3);
+
+  let expectation = 0;
+  for (const item of list) {
+    expect(item).toBe(++expectation);
+  }
+
+  expectation = 0;
+  for (const item of list) {
+    expect(item).toBe(++expectation);
+  }
+});
+
+test("iterator empty repetition", () => {
+  const list = new LinkedList();
+  list.push(1);
+  list.push(2);
+  list.push(3);
+
+  let expectation = 0;
+  for (const item of list) {
+    expect(item).toBe(++expectation);
+  }
+
+  list.pop();
+  list.pop();
+  list.pop();
+  list.push(4);
+  list.push(5);
+
+  for (const item of list) {
+    expect(item).toBe(++expectation);
+  }
+});
