@@ -58,7 +58,9 @@ export class LinkedList<T> implements Iterable<T> {
     }
     const item = this.tail.popSelf();
     this.tail = item.previous;
-    --this.length;
+    if (--this.length === 0) {
+      this.head = undefined;
+    }
     return item.value;
   }
 
@@ -68,7 +70,9 @@ export class LinkedList<T> implements Iterable<T> {
     }
     const item = this.head.popSelf();
     this.head = item.next;
-    --this.length;
+    if (--this.length === 0) {
+      this.tail = undefined;
+    }
     return item.value;
   }
 

@@ -119,4 +119,24 @@ test("iterator empty repetition", () => {
   for (const item of list) {
     expect(item).toBe(++expectation);
   }
+  expect(expectation).toBe(5);
+});
+
+test("iterator add and remove one item", () => {
+  const list = new LinkedList();
+  list.push(1);
+
+  let expectation = 0;
+  for (const item of list) {
+    expect(item).toBe(++expectation);
+  }
+
+  list.removeFromFront();
+  console.warn(list);
+  list.push(2);
+
+  for (const item of list) {
+    expect(item).toBe(++expectation);
+  }
+  expect(expectation).toBe(2);
 });

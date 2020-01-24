@@ -7,6 +7,7 @@
 - Add string comparison.
 - Add `Option.str` for template string mapping.
 - Expose `LinkedList` internal functions.
+- Fix bug related to `LinkedList`.
 
 ## 1.1.9
 
