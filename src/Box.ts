@@ -9,19 +9,19 @@
  /**
   * A container for a reference to something.
   */
-export class Box<T> {
+export class Box<T> implements Iterable<T> {
   public static empty<T>(): Box<T | undefined> {
     return new Box<T | undefined>(undefined);
   }
 
-  public value: T;
+  public value: T | undefined;
 
-  constructor(value: T) {
+  constructor(value?: T) {
     this.value = value;
   }
 
-  public valueOf() {
-    return this.value;
+  public valueOf(): T {
+    return this.value!;
   }
 
   public setValueTo(other: Box<T>) {
@@ -30,5 +30,11 @@ export class Box<T> {
 
   public updateValueFrom(other: Box<T>) {
     other.value = this.value;
+  }
+
+  public *[Symbol.iterator]() {
+    if (this.value !== undefined) {
+      yield this.value;
+    }
   }
 }

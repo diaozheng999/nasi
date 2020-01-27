@@ -1,3 +1,6 @@
+## 1.2.1
+- Add Iterator support in `Box` for 0-1 iteration of optionals.
+
 ## 1.2.0
 
 - Update dependency `typescript` to `3.7.2`, include support for TypeScript 3.7 features.
