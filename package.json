@@ -1,6 +1,6 @@
 {
   "name": "nasi",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Common JS/TypeScript API",
   "main": "dist/cjs/index.js",
   "types": "dist/types/index.d.ts",
