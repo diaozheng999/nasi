@@ -456,3 +456,24 @@ export function str(
   }
   return literal;
 }
+
+/**
+ * If opt is a mapping function, execute opt on v. Otherwise, return v.
+ *
+ * This is identical to
+ * ```
+ * mapChoice(opt, (f) => f(v), v)
+ * ```
+ *
+ * @param opt optional mapping function
+ * @param v value to be potentially mapped
+ */
+export function callIf<T>(
+  opt: Option<(value: T) => T>,
+  v: T,
+): T {
+  if (isSome(opt)) {
+    return opt(v);
+  }
+  return v;
+}

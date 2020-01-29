@@ -618,3 +618,15 @@ describe("compareSome", () => {
     expect(comparison).toBeCalledWith(left, right);
   });
 });
+
+describe("callIf", () => {
+  test("defined", () => {
+    const mapper = jest.fn((n) => n + 1);
+    expect(Option.callIf(mapper, 1)).toBe(2);
+    expect(mapper).toBeCalled();
+  });
+
+  test("undefined", () => {
+    expect(Option.callIf(undefined, 1)).toBe(1);
+  });
+});

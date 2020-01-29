@@ -1,3 +1,6 @@
+## 1.2.2
+- Add `callIf` in `Option`.
+
 ## 1.2.1
 - Add Iterator support in `Box` for 0-1 iteration of optionals.
 
