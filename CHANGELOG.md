@@ -1,3 +1,6 @@
+## 1.2.3
+- Add `Lazy`.
+
 ## 1.2.2
 - Add `callIf` in `Option`.
 
