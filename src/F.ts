@@ -178,3 +178,9 @@ export function curryRight<T0, T1, TArgs extends any[], TReturn>(
 ): Func<[T1], (arg0: T0, ...args: TArgs) => TReturn> {
   return (arg1) => (arg0, ...rest) => f(arg0, arg1, ...rest);
 }
+
+export function ctor<TArgs extends any[], TReturn>(
+  Constructor: new (...args: TArgs) => TReturn,
+): Func<TArgs, TReturn> {
+  return (...args) => new Constructor(...args);
+}
