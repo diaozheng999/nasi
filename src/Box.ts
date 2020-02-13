@@ -32,6 +32,12 @@ export class Box<T> implements Iterable<T> {
     other.value = this.value;
   }
 
+  public update(value: T): T {
+    const previousValue = this.valueOf();
+    this.value = value;
+    return previousValue;
+  }
+
   public *[Symbol.iterator]() {
     if (this.value !== undefined) {
       yield this.value;

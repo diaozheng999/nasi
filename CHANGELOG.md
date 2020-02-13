@@ -1,3 +1,6 @@
+## 1.2.4
+- Add `update` in `Box`.
+
 ## 1.2.3
 - Add `Lazy`.
 
