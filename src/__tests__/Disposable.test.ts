@@ -4,7 +4,7 @@
  * @file test functions for disposable objects
  */
 
-import { Disposable } from "../Disposable";
+import { Disposable, ICustomDisposable } from "../Disposable";
 
 test("single dispose", () => {
   const fn = jest.fn();
@@ -72,4 +72,26 @@ test("disposing of a custom disposer", () => {
   expect(disposeFunction).toBeCalledTimes(1);
 
   console.warn = memoizedConsoleWarn;
+});
+
+test("disposing inherited disposers", () => {
+
+  const disposeFunction = jest.fn();
+
+  class BaseDisposable implements ICustomDisposable {
+    public [Disposable.IsDisposed] = false;
+    public [Disposable.Dispose]() {
+      disposeFunction();
+      this[Disposable.IsDisposed] = true;
+    }
+  }
+
+  // tslint:disable-next-line: max-classes-per-file
+  class ChildDisposable extends BaseDisposable {}
+
+  const custom = new ChildDisposable();
+
+  Disposable.dispose(custom);
+
+  expect(disposeFunction).toBeCalled();
 });

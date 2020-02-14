@@ -1,5 +1,7 @@
 ## 1.2.5
 - Add `ctor` to `F`.
+- Add typed predicate as a conditon to `P.branch`.
+- Fix bug with nested prototypes in `Disposable`.
 
 ## 1.2.4
 - Add `update` in `Box`.

@@ -175,10 +175,20 @@ export function infer<T>(
   return or(not(precedant), antecedent);
 }
 
+export function branch<T, K extends T>(
+  predicate: TypedPredicate<T, K>,
+  ifTrue: Predicate<K>,
+  ifFalse: Predicate<Types.Not<T, K>>,
+): Predicate<T>;
 export function branch<T>(
   predicate: Predicate<T>,
   ifTrue: Predicate<T>,
   ifFalse: Predicate<T>,
+): Predicate<T>;
+export function branch<T>(
+  predicate: Predicate<T>,
+  ifTrue: Predicate<T>,
+  ifFalse: any,
 ): Predicate<T> {
   return (arg: T) => {
     if (predicate(arg)) {

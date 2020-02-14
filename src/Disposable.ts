@@ -32,9 +32,12 @@ export type DisposableType =
 function isCustomDisposable(
   disposable: DisposableType,
 ): disposable is ICustomDisposable {
+
+  const suspect: any = disposable;
+
   return (
-    disposable.hasOwnProperty(IS_DISPOSED) &&
-    disposable.hasOwnProperty(DISPOSE)
+    typeof suspect[IS_DISPOSED] !== "undefined" &&
+    typeof suspect[DISPOSE] === "function"
   );
 }
 
@@ -49,8 +52,8 @@ export class Disposable {
       typeof disposable === "object" &&
       (
         disposable instanceof Disposable ||
-        disposable.hasOwnProperty(DISPOSE) ||
-        disposable.hasOwnProperty(DISPOSABLE)
+        typeof disposable[DISPOSE] === "function" ||
+        typeof disposable[DISPOSABLE] !== "undefined"
       )
     ) {
       Disposable.dispose(disposable);
