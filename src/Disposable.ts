@@ -50,6 +50,7 @@ export class Disposable {
   public static tryDispose(disposable: any) {
     if (
       typeof disposable === "object" &&
+      disposable !== null && // ye olde JavaScript bug
       (
         disposable instanceof Disposable ||
         typeof disposable[DISPOSE] === "function" ||

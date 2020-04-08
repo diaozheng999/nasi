@@ -1,3 +1,6 @@
+## Unpublished
+- Improve performance of `Semaphore`.
+
 ## 1.2.5
 - Add `ctor` to `F`.
 - Add typed predicate as a conditon to `P.branch`.

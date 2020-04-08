@@ -92,14 +92,15 @@ test("semaphore blocking", async () => {
   await Promise.all([f1, f2, f3]);
 
   expect(executionOrder).toBeCalledTimes(9);
+
   expect(executionOrder.mock.calls[0][0]).toBe(0);
   expect(executionOrder.mock.calls[1][0]).toBe(3);
   expect(executionOrder.mock.calls[2][0]).toBe(6);
   expect(executionOrder.mock.calls[3][0]).toBe(1);
   expect(executionOrder.mock.calls[4][0]).toBe(4);
   expect(executionOrder.mock.calls[5][0]).toBe(2);
-  expect(executionOrder.mock.calls[6][0]).toBe(5);
-  expect(executionOrder.mock.calls[7][0]).toBe(7);
+  expect(executionOrder.mock.calls[6][0]).toBe(7);
+  expect(executionOrder.mock.calls[7][0]).toBe(5);
   expect(executionOrder.mock.calls[8][0]).toBe(8);
 
 });

@@ -24,7 +24,7 @@
     "lodash": "^4.17.15",
     "lru-cache": "^5.1.1",
     "splaytree": "^3.0.1",
-    "tslib": "^1.10.0"
+    "tslib": "^1.11.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.18",
@@ -39,7 +39,7 @@
     "tslint-no-focused-test": "^0.5.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-markdown": "^2.2.11",
-    "typescript": "^3.7.2"
+    "typescript": "^3.8.3"
   },
   "jest": {
     "transform": {

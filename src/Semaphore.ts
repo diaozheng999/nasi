@@ -4,6 +4,8 @@
  * @file Async semaphore useful for async functions and promises.
  */
 
+import { LinkedList } from "./LinkedList";
+
  /**
   * An asynchronous semaphore implementation that is useful when dealing with
   * promises.
@@ -20,7 +22,7 @@ export class Semaphore {
   private value: number;
   private debugName: string = "";
 
-  private pendingWaits: Array<() => void> = [];
+  private pendingWaits: LinkedList<() => void> = new LinkedList();
 
   constructor(initialValue: number, debugName?: string) {
     // this will throw an error if inputValue is NaN
