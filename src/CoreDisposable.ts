@@ -13,7 +13,7 @@ import { Disposable, ICustomDisposable } from "./Disposable";
 export abstract class CoreDisposable implements ICustomDisposable {
   #isDisposed = false;
 
-  public get [Disposable.IsDisposed] {
+  public get [Disposable.IsDisposed]() {
     return this.#isDisposed;
   }
 
