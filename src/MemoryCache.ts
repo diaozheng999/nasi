@@ -8,6 +8,8 @@ import LRUCache from "lru-cache";
 import { Disposable, IDisposable } from "./Disposable";
 import * as Hashing from "./Hashing";
 import * as Option from "./Option";
+import { Unconstrained } from './Types';
+import * as Integer from "./Integer";
 
 /**
  * The number of items to cache
@@ -18,10 +20,13 @@ const CACHE_SIZE = 4000;
  */
 const CACHE_DEFAULT_EXPIRY = 60000;
 
-export interface ICacheLine<T, K> {
+export interface CacheLine<T, K> {
   key: number | K;
   value: T;
 }
+
+/** @deprecated use `CacheLine` instead. */
+export type ICacheLine<T, K> = CacheLine<T, K>;
 
 class MemoryCacheInternal implements IDisposable {
 
@@ -31,13 +36,13 @@ class MemoryCacheInternal implements IDisposable {
 
   public [Disposable.Instance] = new Disposable(this.clear.bind(this));
 
-  private cache: LRUCache<number, ICacheLine<any, any>>;
+  private cache: LRUCache<number, CacheLine<Unconstrained, Unconstrained>>;
 
   constructor(maxEntries: number) {
     this.cache = new LRUCache({
       max: maxEntries,
       maxAge: CACHE_DEFAULT_EXPIRY,
-      dispose(__: number, cacheLine: ICacheLine<any, any>) {
+      dispose(_k: number, cacheLine: CacheLine<unknown, unknown>) {
         Disposable.tryDispose(cacheLine.value);
       },
     });
@@ -87,7 +92,9 @@ class MemoryCacheInternal implements IDisposable {
    * cache expires.
    * @param key the precomputed hash
    */
-  public UNSAFE_getLine<T>(key: number): Option.Type<ICacheLine<T, any>> {
+  public UNSAFE_getLine<T>(
+    key: number,
+  ): Option.Type<CacheLine<T, Unconstrained>> {
     return this.cache.get(key);
   }
 
@@ -122,18 +129,18 @@ class MemoryCacheInternal implements IDisposable {
     let output = "";
     this.cache.forEach((data, key) => {
       output += (
-        `\nkey: ${key} (0x${key.toString(16)})\tvalue: ` +
+        `\nkey: ${key} (0x${Integer.toHexUnsafe(key)})\tvalue: ` +
         JSON.stringify(data, undefined, 2) + "\n"
       );
     });
-    // tslint:disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.warn(output);
   }
 
   private constructCacheLine<T, K>(
     key: number | K,
     value: T,
-  ): ICacheLine<T, K> {
+  ): CacheLine<T, K> {
     return { key, value };
   }
 
@@ -149,8 +156,8 @@ class MemoryCacheInternal implements IDisposable {
 
   private setInternal(
     hash: number,
-    key: any,
-    value: any,
+    key: Unconstrained,
+    value: Unconstrained,
     age?: number,
   ) {
     this.cache.set(

@@ -41,11 +41,11 @@ function isDisjunction<T>(p: Predicate<T>): p is DisjunctionPredicate<T> {
   return p.hasOwnProperty(DISJUNCTION);
 }
 
-export function never(__: any): boolean {
+export function never(_pred: Types.Unconstrained): boolean {
   return false;
 }
 
-export function always(__: any): boolean {
+export function always(_pred: Types.Unconstrained): boolean {
   return true;
 }
 
@@ -59,35 +59,6 @@ export function eq<T>(obj: T): Predicate<T> {
 
 export function matches(regex: RegExp): Predicate<string> {
   return (s: string) => regex.test(s);
-}
-
-export function not<T, Q extends T>(
-  predicate: Typed<T, Q>,
-): Typed<T, Types.Not<T, Q>>;
-export function not<T>(predicate: Predicate<T>): Predicate<T>;
-export function not<T>(predicate: Predicate<T>): Predicate<T> {
-
-  if (isNegatable(predicate)) {
-    return predicate[NEGATE];
-  }
-
-  // see if it's a conjunction or disjunction
-  if (isConjunction(predicate)) {
-    const disjunction: any = or(...predicate[CONJUNCTION].map(not));
-    disjunction[NEGATE] = predicate;
-    (predicate as any)[NEGATE] = disjunction;
-    return disjunction;
-  } else if (isDisjunction(predicate)) {
-    const conjunction: any = and(...predicate[DISJUNCTION].map(not));
-    conjunction[NEGATE] = predicate;
-    (predicate as any)[NEGATE] = conjunction;
-    return conjunction;
-  }
-
-  const negate: any = (arg: T) => !predicate(arg);
-  negate[NEGATE] = predicate;
-  (predicate as NegatedPredicate<T>)[NEGATE] = negate;
-  return negate;
 }
 
 function boundConjunctionExecutor<T>(
@@ -129,8 +100,7 @@ export function and<T>(...predicates: Array<Predicate<T>>): Predicate<T> {
     }
   }
 
-  let conjunction: any;
-  conjunction = boundConjunctionExecutor.bind<
+  const conjunction: Types.Unconstrained = boundConjunctionExecutor.bind<
     unknown,
     Array<Predicate<T>>,
     [T],
@@ -156,8 +126,7 @@ export function or<T>(...predicates: Array<Predicate<T>>): Predicate<T> {
     }
   }
 
-  let disjunction: any;
-  disjunction = boundDisjunctionExecutor.bind<
+  const disjunction: Types.Unconstrained = boundDisjunctionExecutor.bind<
     unknown,
     Array<Predicate<T>>,
     [T],
@@ -166,6 +135,39 @@ export function or<T>(...predicates: Array<Predicate<T>>): Predicate<T> {
   disjunction[DISJUNCTION] = filtered;
 
   return disjunction;
+}
+
+export function not<T, Q extends T>(
+  predicate: Typed<T, Q>,
+): Typed<T, Types.Not<T, Q>>;
+export function not<T>(predicate: Predicate<T>): Predicate<T>;
+export function not<T>(predicate: Predicate<T>): Predicate<T> {
+
+  if (isNegatable(predicate)) {
+    return predicate[NEGATE];
+  }
+
+  // see if it's a conjunction or disjunction
+  if (isConjunction(predicate)) {
+    const disjunction: Types.Unconstrained = or(
+      ...predicate[CONJUNCTION].map(not)
+    );
+    disjunction[NEGATE] = predicate;
+    (predicate as Types.Unconstrained)[NEGATE] = disjunction;
+    return disjunction;
+  } else if (isDisjunction(predicate)) {
+    const conjunction: Types.Unconstrained = and(
+      ...predicate[DISJUNCTION].map(not)
+    );
+    conjunction[NEGATE] = predicate;
+    (predicate as Types.Unconstrained)[NEGATE] = conjunction;
+    return conjunction;
+  }
+
+  const negate: Types.Unconstrained = (arg: T) => !predicate(arg);
+  negate[NEGATE] = predicate;
+  (predicate as NegatedPredicate<T>)[NEGATE] = negate;
+  return negate;
 }
 
 export function infer<T>(
@@ -188,7 +190,7 @@ export function branch<T>(
 export function branch<T>(
   predicate: Predicate<T>,
   ifTrue: Predicate<T>,
-  ifFalse: any,
+  ifFalse: Types.Unconstrained,
 ): Predicate<T> {
   return (arg: T) => {
     if (predicate(arg)) {
@@ -218,5 +220,7 @@ export function pred<T>(predicate: Predicate<T>): Predicate<T> {
 }
 
 // we set never and always's negations to one another
-(never as NegatedPredicate<any>)[NEGATE] = always as NegatedPredicate<any>;
-(always as NegatedPredicate<any>)[NEGATE] = never as NegatedPredicate<any>;
+(never as NegatedPredicate<Types.Unconstrained>)[NEGATE] =
+  always as NegatedPredicate<Types.Unconstrained>;
+(always as NegatedPredicate<Types.Unconstrained>)[NEGATE] =
+  never as NegatedPredicate<Types.Unconstrained>;

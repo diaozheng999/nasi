@@ -4,6 +4,9 @@
  * @file A simple in-memory cache that stores computed objects and somesuch.
  * @barrel export createMemoryCacheLegacy
  */
+
+/* eslint-disable */
+
 import SplayTree from "splaytree";
 import * as Hashing from "./Hashing";
 import * as Option from "./Option";

@@ -16,7 +16,7 @@ test("inequality", () => {
   }
 });
 
-test("inequality", () => {
+test("inequality 2", () => {
   const unique = new Unique();
   const unique2 = new Unique("Unique2");
   for (let i = 0; i < 1000; ++i) {

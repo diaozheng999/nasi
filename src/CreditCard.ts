@@ -4,6 +4,8 @@
  * @file Defines various utility methods to process Credit Card numbers.
  */
 
+/* eslint-disable no-magic-numbers */
+
 // @barrel export all
 
 /**

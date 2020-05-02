@@ -7,13 +7,11 @@
 
 const UNINITIALISED = Symbol("LAZY_UNINITIALISED");
 
-interface ILazy<T> {
+export interface Lazy<T> {
   value: T;
 }
 
-export type Lazy<T> = ILazy<T>;
-
-class LazyInternal<T> implements ILazy<T> {
+class LazyInternal<T> implements Lazy<T> {
 
   private sharedValue: T | typeof UNINITIALISED = UNINITIALISED;
   private init: () => T;

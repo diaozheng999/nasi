@@ -5,13 +5,16 @@
  * @barrel export all
  */
 
-export interface IPresentable {
+export interface Presentable {
   value: string;
   unit: string;
   rawValue: number;
 }
 
-export type Converter = (rawValue: number) => IPresentable;
+/** @deprecated use `Presentable` instead */
+export type IPresentable = Presentable;
+
+export type Converter = (rawValue: number) => Presentable;
 export type ConverterSpec = (rawValue: number) => readonly [string, string];
 
 const MB_IN_BYTES = 0x100000; // 2^20
@@ -83,6 +86,7 @@ export const dataFromBytes: Converter = (rawValueInBytes: number) => {
   const rawValue = wrapNegativeZero(rawValueInBytes);
 
   if (valueInGB >= 1) {
+    // eslint-disable-next-line no-magic-numbers
     const output = Math.ceil(valueInGB * 100).toFixed(0);
 
     const decimal = output.substr(output.length - 2);

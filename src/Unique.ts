@@ -7,11 +7,14 @@
 
 import * as Hashing from "./Hashing";
 import { Opaque } from "./Types";
+import { toHex } from './Integer';
 
-export type UniqueValue = Opaque<string, Unique>;
+declare const UniqueSymbol: unique symbol;
+
+export type UniqueValue = Opaque<string, typeof UniqueSymbol>;
 
 export class Unique {
-  private static uniqueId: number = 0;
+  private static uniqueId = 0;
   private static instance = new Unique();
   public static get value() {
     return this.instance.opaque;
@@ -29,7 +32,7 @@ export class Unique {
 
     this.instanceId = Unique.uniqueId++;
 
-    const hashedInstanceId = Hashing.hash(this.instanceId).toString(16);
+    const hashedInstanceId = toHex(Hashing.hash(this.instanceId));
 
     this.instanceName = `${this.debugName}@${hashedInstanceId}`;
     this.instanceHash = Hashing.hash(this.instanceName);
@@ -40,12 +43,11 @@ export class Unique {
   }
 
   public get number() {
-    // tslint:disable-next-line: no-bitwise
     return this.instanceHash ^ (this.id++);
   }
 
   public get opaque() {
-    return this.string as Opaque<string, Unique>;
+    return this.string as UniqueValue;
   }
 
   public toString() {

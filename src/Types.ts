@@ -6,24 +6,27 @@
  * @barrel export all
  */
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+declare const __tyinternal_type: unique symbol;
+
 /** An opaque type of T with a phantom label. */
-export type Opaque<T, TLabel> = T & { __tyinternal_type: TLabel };
+export type Opaque<T, TLabel> = T & { [__tyinternal_type]: TLabel };
 
 /**
  * The argument type of T (which is a function).
  * (In TypeScript 3.2, the spread operator can be inferred)
  */
 export type ArgumentType<T> =
-  T extends ((arg0: infer U) => any) ?
+  T extends ((arg0: infer U) => Unconstrained) ?
     U
-  : T extends ((...args: infer Us) => any) ?
+  : T extends ((...args: infer Us) => Unconstrained) ?
     Us
   :
     never
 ;
 
 export type ArgumentTupleType<T> =
-  T extends (...args: infer U) => any ? U : never;
+  T extends (...args: infer U) => Unconstrained ? U : never;
 
 /**
  * Export the return type of T (which is a function).
@@ -31,16 +34,18 @@ export type ArgumentTupleType<T> =
 export type ReturnType<T> =
   T extends (() => infer R) ?
     R
-  : T extends ((...args: any[]) => infer Rt) ?
+  : T extends ((...args: Unconstrained[]) => infer Rt) ?
     Rt
   :
     never
 ;
 
-export interface ITyped<T, U> {
+export interface Typed<T, U> {
   type: T;
   value: U;
 }
+/** @deprecated use `Typed<T, U>` instead */
+export type ITyped<T, U> = Typed<T, U>;
 
 /**
  * @deprecated (TypeScript 3.5)
@@ -68,3 +73,17 @@ export type Awaited<T> =
   :
     T
 ;
+
+/**
+ * Unconstrained should be used responsibly, as this bypasses the
+ * `no-explicit-any` lint check.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Unconstrained = any;
+
+/**
+ * AnyArray should be used responsibly, as this bypasses the
+ * `no-explicit-any` lint check.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyArray = any[];

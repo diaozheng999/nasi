@@ -8,14 +8,17 @@ import * as Hashing from "../Hashing";
 import { createMemoryCache } from "../MemoryCache";
 import { createMemoryCacheLegacy } from "../MemoryCacheLegacy";
 
-declare var global: any;
+import { int31 } from "../Integer";
+import { Unconstrained } from "../Types";
+
+declare const global: Unconstrained;
 const memoizedDateConstructor = Date;
 
 let currentDate = new memoizedDateConstructor().getTime();
 const initialDate = new memoizedDateConstructor().getTime();
 
 // tslint:disable-next-line: only-arrow-functions
-global.Date = function(date?: any) {
+global.Date = function(date?: Unconstrained) {
   if (date === undefined) {
     return new memoizedDateConstructor(currentDate);
   }
@@ -26,10 +29,10 @@ global.Date.now = () => currentDate;
 
 beforeAll(() => {
   const context = Hashing.getCurrentContext();
-  context.p = 4 as any; // not a prime, but ¯\_(ツ)_/¯
-  context.a = 1 as any;
-  context.b = 0 as any;
-  context.int = 0 as any;
+  context.p = 4 as int31; // not a prime, but ¯\_(ツ)_/¯
+  context.a = 1 as int31;
+  context.b = 0 as int31;
+  context.int = 0 as int31;
   Hashing.setContext(context);
 });
 

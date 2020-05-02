@@ -6,6 +6,11 @@
 
 import { Semaphore } from "../Semaphore";
 
+// We want to create a promise that's executed as we go along.
+/* eslint-disable @typescript-eslint/no-misused-promises */
+// FIXME: remove this override after validating tests
+/* eslint-disable jest/valid-expect, jest/no-try-expect */
+
 test("should not be initialisable with negative numbers", () => {
   expect(() => new Semaphore(0)).toThrowError();
   expect(() => new Semaphore(-1)).toThrowError();
@@ -150,10 +155,10 @@ test("semaphore success", () => {
   jest.useRealTimers();
 });
 
-test("semaphore immediate reject", () => {
+test("semaphore immediate reject", async () => {
   const semaphore = new Semaphore(1);
   semaphore.wait();
-  expect(semaphore.wait(-1)).rejects.toBeUndefined();
+  await expect(semaphore.wait(-1)).rejects.toBeUndefined();
 });
 
 test("semaphore debug identity", () => {

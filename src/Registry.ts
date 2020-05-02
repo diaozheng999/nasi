@@ -4,7 +4,6 @@
  * @file A standard registry for static objects
  */
 
-import _ from "lodash";
 import { ensures, requires } from "./Contract";
 import * as Option from "./Option";
 
@@ -35,7 +34,7 @@ export class Registry<TKey extends string | number | symbol, TValue> {
   @requires(function(this: Registry<TKey, TValue>, key: TKey) {
     return !this.registeredKeys.has(key);
   }, "key not must be registered.")
-  @requires(function(this: Registry<TKey, TValue>, __: TKey, fallback?: TKey) {
+  @requires(function(this: Registry<TKey, TValue>, _k: TKey, fallback?: TKey) {
     return (!fallback) || this.registeredKeys.has(fallback);
   }, "fallback must be registered.")
   public addKey(key: TKey, fallback?: TKey) {
@@ -48,7 +47,7 @@ export class Registry<TKey extends string | number | symbol, TValue> {
     }
   }
 
-  @requires(function(this: Registry<TKey, TValue>, key: TKey, __: TValue) {
+  @requires(function(this: Registry<TKey, TValue>, key: TKey, _v: TValue) {
     return this.registeredKeys.has(key);
   }, "key must be registered.")
   public updateValue(key: TKey, value: TValue) {
@@ -66,6 +65,7 @@ export class Registry<TKey extends string | number | symbol, TValue> {
   }, "key must be registered")
   @ensures((result: TValue) => Option.isSome(result), "value must be defined")
   public unsafeGetValue(key: TKey): TValue {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.registry[key]!;
   }
 
@@ -96,7 +96,7 @@ export class Registry<TKey extends string | number | symbol, TValue> {
   @requires(function(
     this: Registry<TKey, TValue>,
     key: TKey,
-    __: (obj: TValue) => void,
+    _f: (obj: TValue) => void,
   ) {
     return this.registeredKeys.has(key);
   }, "key must be registered")

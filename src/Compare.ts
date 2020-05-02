@@ -78,7 +78,7 @@ export function strEq(a: string, b: string): boolean {
 
 export function option<T>(
   cmp: Comparison<T>,
-  hoistNone: boolean = false,
+  hoistNone = false,
 ): Comparison<Option<T>> {
   const noneSortOrder: ComparisonResult = hoistNone ? -1 : 1;
   return (a, b) => {

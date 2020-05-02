@@ -6,34 +6,43 @@
 
 import { invariant } from "./Contract";
 import { devOnly } from "./Dev";
+import { Unconstrained } from './Types';
 
 const DISPOSE = Symbol.for("nasi/DISPOSE");
 const IS_DISPOSED = Symbol.for("nasi/IS_DISPOSED");
 const DISPOSABLE = Symbol.for("nasi/DISPOSABLE");
 
-// @barrel export ICustomDisposable
+// @barrel export InstanceDisposable
+// @barrel export CustomDisposable
 
-export interface ICustomDisposable {
+export interface CustomDisposable {
   [IS_DISPOSED]: boolean;
   [DISPOSE](): void;
 }
 
-// @barrel export IDisposable
-export interface IDisposable {
+interface InstanceDisposable {
   [DISPOSABLE]: Disposable;
 }
 
 export type DisposableType =
-  | IDisposable
-  | ICustomDisposable
+  | InstanceDisposable
+  | CustomDisposable
   | Disposable
 ;
+
+// @barrel export ICustomDisposable
+// @barrel export IDisposable
+
+/** @deprecated use `InstanceDisposable` instead */
+export type IDisposable = InstanceDisposable;
+/** @deprecated use `CustomDisposable` instead */
+export type ICustomDisposable = CustomDisposable;
 
 function isCustomDisposable(
   disposable: DisposableType,
 ): disposable is ICustomDisposable {
 
-  const suspect: any = disposable;
+  const suspect: Unconstrained = disposable;
 
   return (
     typeof suspect[IS_DISPOSED] !== "undefined" &&
@@ -47,7 +56,7 @@ export class Disposable {
   public static readonly IsDisposed: typeof IS_DISPOSED = IS_DISPOSED;
   public static readonly Instance: typeof DISPOSABLE = DISPOSABLE;
 
-  public static tryDispose(disposable: any) {
+  public static tryDispose(disposable: Unconstrained) {
     if (
       typeof disposable === "object" &&
       disposable !== null && // ye olde JavaScript bug
@@ -79,23 +88,23 @@ export class Disposable {
     }
   }
 
-  private disposed: boolean = false;
-  private disposeFunction: () => void;
+  #disposed = false;
+  #disposeFunction: () => void;
 
   constructor(disposeFunction: () => void) {
-    this.disposeFunction = disposeFunction;
+    this.#disposeFunction = disposeFunction;
   }
 
   /**
    * Execute the internally stored dispose function once and only once.
    */
   public dispose() {
-    if (!this.disposed) {
-      this.disposed = true;
-      this.disposeFunction();
+    if (!this.#disposed) {
+      this.#disposed = true;
+      this.#disposeFunction();
     } else {
       devOnly(() => {
-        // tslint:disable-next-line: no-console
+        // eslint-disable-next-line no-console
         console.warn(
           `Disposable: trying to call dispose() on an already disposed object.`,
         );
@@ -104,6 +113,6 @@ export class Disposable {
   }
 
   public get isDisposed() {
-    return this.disposed;
+    return this.#disposed;
   }
 }

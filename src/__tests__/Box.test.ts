@@ -19,31 +19,31 @@ test("mutability update", () => {
 test("empty iterator", () => {
   const box1 = new Box();
 
-  const test = jest.fn();
+  const touch = jest.fn();
 
   for (const value of box1) {
-    test(value);
+    touch(value);
   }
 
-  expect(test).toBeCalledTimes(0);
+  expect(touch).toBeCalledTimes(0);
 });
 
 test("filled iterator", () => {
   const box1 = new Box(1);
 
-  const test = jest.fn();
+  const touch = jest.fn();
 
   for (const value of box1) {
-    test(value);
+    touch(value);
   }
 
-  expect(test).toBeCalledTimes(1);
-  expect(test).toBeCalledWith(1);
+  expect(touch).toBeCalledTimes(1);
+  expect(touch).toBeCalledWith(1);
 
   box1.value = 2;
 
   for (const value of box1) {
-    test(value);
+    touch(value);
   }
-  expect(test).toBeCalledWith(2);
+  expect(touch).toBeCalledWith(2);
 });

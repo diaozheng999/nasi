@@ -6,6 +6,7 @@
 
 import _ from "lodash";
 import * as H from "../Hashing";
+import { Unconstrained } from "../Types";
 
 test("hash null, undefined", () => {
   let ctx = H.regenerateContext();
@@ -146,7 +147,7 @@ describe("object", () => {
   });
 
   test("object hash", () => {
-    const obj: any = { a: 1 };
+    const obj: Unconstrained = { a: 1 };
     const hash1 = H.hash(obj, ctx);
     expect(hash1).not.toBe(H.hash({}, ctx));
     obj.a = "1";

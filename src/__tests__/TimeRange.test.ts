@@ -338,6 +338,7 @@ describe("serialisation", () => {
     const range = new TimeRange(0, 1);
     const range2 = TimeRange.deserialise(TimeRange.serialise(range));
     expect(range2).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     expect(range.equals(range2!)).toBe(true);
   });
 

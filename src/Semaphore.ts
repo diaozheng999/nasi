@@ -20,7 +20,7 @@ export class Semaphore {
   }
 
   private value: number;
-  private debugName: string = "";
+  private debugName = "";
 
   private pendingWaits: LinkedList<() => void> = new LinkedList();
 

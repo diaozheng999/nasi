@@ -5,7 +5,7 @@
  * @barrel export all
  */
 
-import _ from "lodash";
+import { Unconstrained } from './Types';
 
 export function *keys<K extends {}>(obj: K): IterableIterator<keyof K> {
   for (const key in obj) {
@@ -19,8 +19,8 @@ export function split<K extends {}, S extends keyof K>(
   obj: K,
   keysToKeep: readonly S[],
 ): readonly [ Pick<K, S>, Pick<K, Exclude<keyof K, S>> ] {
-  const take: any = {};
-  const drop: any = {};
+  const take: Unconstrained = {};
+  const drop: Unconstrained = {};
 
   const toKeep = new Set<keyof K>(keysToKeep);
 

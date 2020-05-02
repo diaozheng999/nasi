@@ -132,7 +132,6 @@ test("iterator add and remove one item", () => {
   }
 
   list.removeFromFront();
-  console.warn(list);
   list.push(2);
 
   for (const item of list) {

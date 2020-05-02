@@ -11,6 +11,7 @@
 
 import { assertNever as newAssertNever } from "./Contract";
 import { devOnly } from "./Dev";
+import { Unconstrained, AnyArray } from './Types';
 
 type Option<T> = T | undefined;
 
@@ -112,10 +113,9 @@ export function value<T>(opt: Option<T>, defaultValue: T): T {
  * @param opt option
  * @param defaultValue the default value to return if option is None.
  */
-export function value_<T, TDefaultArguments extends any[]>(
+export function value_<T, TDefaultArguments extends Unconstrained[]>(
   opt: Option<T>,
   defaultValue: (...args: TDefaultArguments) => T,
-  // tslint:disable-next-line:trailing-comma
   ...defaultParams: TDefaultArguments
 ): T {
   if (isSome(opt)) {
@@ -366,7 +366,7 @@ export function assertSome<T>(
   devOnly(() => {
     if (isNone(opt)) {
       const name = screenName ? ` ${screenName}` : "";
-      // tslint:disable-next-line:no-console
+      // eslint-disable-next-line no-console
       console.warn(`Assertion Failure: Field${name} does not contain a value.`);
     }
   });
@@ -390,7 +390,7 @@ export function assertSome<T>(
 export function assertNever(x: never): never
 {
   devOnly(() => {
-    // tslint:disable-next-line: no-console
+    // eslint-disable-next-line no-console
     console.warn(
       `Option.assertNever is deprecated. Use Contract.assertNever instead.`,
     );
@@ -424,15 +424,15 @@ export function property<T extends {}, K extends keyof T>(
 /**
  * @deprecated prefer `f?.(...args)` instead.
  */
-export function execute<TArgs extends any[]>(
+export function execute<TArgs extends AnyArray>(
   f: Option<(...args: TArgs) => void>,
   ...args: TArgs
 ): void;
-export function execute<TArgs extends any[], TReturn>(
+export function execute<TArgs extends AnyArray, TReturn>(
   f: Option<(...args: TArgs) => TReturn>,
   ...args: TArgs
 ): Option<TReturn>;
-export function execute<TArgs extends any[], TReturn>(
+export function execute<TArgs extends AnyArray, TReturn>(
   f: Option<(...args: TArgs) => TReturn>,
   ...args: TArgs
 ): Option<TReturn> {

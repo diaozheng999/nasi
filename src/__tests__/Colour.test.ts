@@ -129,7 +129,7 @@ test("colour hsla clamp negative period", () => {
   });
 });
 
-test("colour hsla clamp negative period", () => {
+test("colour hsla clamp negative period 2", () => {
   expect(Colour.hsla(-405, -1, 0, 255, false)).toStrictEqual({
     h: 315,
     s: 0,
@@ -191,7 +191,7 @@ test("colour equality sametype rgb", () => {
   )).toBe(true);
 });
 
-test("colour equality sametype rgb", () => {
+test("colour equality sametype rgb 2", () => {
   expect(Colour.almostEqual(
     Colour.rgb(0, 0, 0),
     Colour.rgb(0, 1, 0),
@@ -540,7 +540,7 @@ test("colour compose", () => {
   expect(hsl).toBeCalledWith(rgb.mock.results[0].value);
 });
 
-test("colour parse rgba", () => {
+test("colour parse rgba error", () => {
   expect(Colour.almostEqual(
     Colour.parse("rgba (   0 , 0.1 ,0.5,               .453  )   "),
     Colour.rgba(0, 0.1, 0.5, 0.453),
@@ -554,7 +554,7 @@ test("colour parse rgba", () => {
   expect(() => Colour.parse("rgba(., .1, .2, .3)")).toThrowError();
 });
 
-test("colour parse rgb", () => {
+test("colour parse rgb error", () => {
   expect(Colour.almostEqual(
     Colour.parse("rgb (  0,0.1  ,     0.5)     "),
     Colour.rgba(0, 0.1, 0.5, 1),

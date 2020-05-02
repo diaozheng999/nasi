@@ -5,6 +5,7 @@
  */
 
 import * as P from "../P";
+import { Unconstrained } from "../Types";
 
 describe("and", () => {
   test("and never", () => {
@@ -236,7 +237,7 @@ describe("basic tests", () => {
   });
 
   test("exists", () => {
-    expect(P.exists<any>("hello")({})).toBe(false);
+    expect(P.exists<Unconstrained>("hello")({})).toBe(false);
     expect(P.exists("hello")({ hello: undefined })).toBe(false);
     expect(P.exists("hello")({ hello: null })).toBe(true);
     expect(P.exists("hello")({ hello: 1 })).toBe(true);
@@ -244,13 +245,18 @@ describe("basic tests", () => {
 
   test("existsWith", () => {
     const pred = jest.fn((a) => a > 5);
-    expect(P.existsWith<any, any>("hello", pred)({})).toBe(false);
+    expect(P.existsWith<Unconstrained, Unconstrained>("hello", pred)({}))
+      .toBe(false);
     expect(pred).not.toBeCalled();
 
-    expect(P.existsWith<any, any>("hello", pred)({ hello: 0 })).toBe(false);
+    expect(
+      P.existsWith<Unconstrained, Unconstrained>("hello", pred)({ hello: 0 }),
+    ).toBe(false);
     expect(pred).toBeCalledTimes(1);
 
-    expect(P.existsWith<any, any>("hello", pred)({ hello: 10 })).toBe(true);
+    expect(
+      P.existsWith<Unconstrained, Unconstrained>("hello", pred)({ hello: 10 }),
+    ).toBe(true);
     expect(pred).toBeCalledTimes(2);
   });
 });

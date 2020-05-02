@@ -42,7 +42,7 @@ test("getUnicodeByAlphabet from `", () => {
   expect(() => Unicode.getUnicodeByAlphabet("`")).toThrow();
 });
 
-test("getUnicodeByAlphabet from `", () => {
+test("getUnicodeByAlphabet from {", () => {
   expect(() => Unicode.getUnicodeByAlphabet("{")).toThrow();
 });
 

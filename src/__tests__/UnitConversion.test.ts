@@ -85,13 +85,6 @@ describe("data", () => {
     expect(result.unit).toBe("GB");
   });
 
-  test("1GB + 1B", () => {
-    const result = Converter.dataFromBytes(0x40000001);
-    expect(result.rawValue).toBe(0x40000001);
-    expect(result.value).toBe("1.01");
-    expect(result.unit).toBe("GB");
-  });
-
   test("7.17GB", () => {
     const result = Converter.dataFromBytes(7698728878);
     expect(result.rawValue).toBe(7698728878);

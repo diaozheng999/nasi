@@ -4,6 +4,8 @@
  * @file test functions for disposable objects
  */
 
+/* eslint-disable no-console */
+
 import { Disposable, ICustomDisposable } from "../Disposable";
 
 test("single dispose", () => {
@@ -16,7 +18,6 @@ test("single dispose", () => {
 });
 
 test("guard against multiple disposes", () => {
-  // tslint:disable:no-console
   const memoizedConsoleWarn = console.warn;
   console.warn = jest.fn();
   const fn = jest.fn();

@@ -37,12 +37,21 @@ export class Mutex {
    * lock attempt
    * @param dependencies a list of dependent locks to prevent some deadlocks.
    */
-  public async UNSAFE_AcquireReadonlyAccess(
+  public async UNSAFE_acquireReadonlyAccess(
     rejectAfter?: number,
     dependencies?: Lock[],
   ) {
     const lock = await this.acquire(rejectAfter, dependencies);
     lock.dispose();
+  }
+
+  /** @deprecated use `UNSAFE_acquireReadonlyAccess` instead. */
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  public async UNSAFE_AcquireReadonlyAccess(
+    rejectAfter?: number,
+    dependencies?: Lock[],
+  ) {
+    return this.UNSAFE_acquireReadonlyAccess(rejectAfter, dependencies);
   }
 
   public async acquire(

@@ -7,6 +7,8 @@
 
 import _ from "lodash";
 
+/* eslint-disable no-magic-numbers */
+
 // removing sort keys because usage of "RGB" or "HSV" is canonical.
 // tslint:disable:object-literal-sort-keys
 
@@ -38,15 +40,6 @@ export const DEBUG_COLOUR: Type = {
   colourSpace: "rgb",
 };
 
-/** Debug colour in RGB (0..255) */
-export const DEBUG_COLOR_RGB = toRgb(DEBUG_COLOUR);
-/** Debug colour in RGB (0..1) */
-export const DEBUG_COLOR_RGB_NORMALIZED = normalise(toRgb(DEBUG_COLOUR));
-/** Debug colour in HSL (0..360, 0..100) */
-export const DEBUG_COLOR_HSL = toHsl(DEBUG_COLOUR);
-/** Debug colour in HSL (0..1, 0..1) */
-export const DEBUG_COLOR_HSL_NORMALIZED = normalise(toHsl(DEBUG_COLOUR));
-
 export type Transform<T extends Type, U extends Type> = (src: T) => U;
 
 /**
@@ -66,7 +59,7 @@ export function clampCycle(value: number, period: number): number {
   return value % period;
 }
 
-export interface IHsl {
+export interface Hsl {
   h: number;
   s: number;
   l: number;
@@ -74,7 +67,7 @@ export interface IHsl {
   colourSpace: "hsl";
 }
 
-export interface IRgb {
+export interface Rgb {
   r: number;
   g: number;
   b: number;
@@ -82,7 +75,7 @@ export interface IRgb {
   colourSpace: "rgb";
 }
 
-export interface IHslNormalised {
+export interface HslNormalised {
   h: number;
   s: number;
   l: number;
@@ -90,7 +83,7 @@ export interface IHslNormalised {
   colourSpace: "hsl-normalised";
 }
 
-export interface IRgbNormalised {
+export interface RgbNormalised {
   r: number;
   g: number;
   b: number;
@@ -98,7 +91,159 @@ export interface IRgbNormalised {
   colourSpace: "rgb-normalised";
 }
 
-export type Type = IRgb | IHsl | IRgbNormalised | IHslNormalised;
+export type Type = Rgb | Hsl | RgbNormalised | HslNormalised;
+
+/**
+ * CSS3 colours as defined in
+ * https://facebook.github.io/react-native/docs/0.55/colours
+ */
+const CSS3_COLOURS: _.Dictionary<string> = {
+  aliceblue: "#f0f8ff",
+  antiquewhite: "#faebd7",
+  aqua: "#00ffff",
+  aquamarine: "#7fffd4",
+  azure: "#f0ffff",
+  beige: "#f5f5dc",
+  bisque: "#ffe4c4",
+  black: "#000000",
+  blanchedalmond: "#ffebcd",
+  blue: "#0000ff",
+  blueviolet: "#8a2be2",
+  brown: "#a52a2a",
+  burlywood: "#deb887",
+  cadetblue: "#5f9ea0",
+  chartreuse: "#7fff00",
+  chocolate: "#d2691e",
+  coral: "#ff7f50",
+  cornflowerblue: "#6495ed",
+  cornsilk: "#fff8dc",
+  crimson: "#dc143c",
+  cyan: "#00ffff",
+  darkblue: "#00008b",
+  darkcyan: "#008b8b",
+  darkgoldenrod: "#b8860b",
+  darkgray: "#a9a9a9",
+  darkgreen: "#006400",
+  darkgrey: "#a9a9a9",
+  darkkhaki: "#bdb76b",
+  darkmagenta: "#8b008b",
+  darkolivegreen: "#556b2f",
+  darkorange: "#ff8c00",
+  darkorchid: "#9932cc",
+  darkred: "#8b0000",
+  darksalmon: "#e9967a",
+  darkseagreen: "#8fbc8f",
+  darkslateblue: "#483d8b",
+  darkslategrey: "#2f4f4f",
+  darkturquoise: "#00ced1",
+  darkviolet: "#9400d3",
+  deeppink: "#ff1493",
+  deepskyblue: "#00bfff",
+  dimgray: "#696969",
+  dimgrey: "#696969",
+  dodgerblue: "#1e90ff",
+  firebrick: "#b22222",
+  floralwhite: "#fffaf0",
+  forestgreen: "#228b22",
+  fuchsia: "#ff00ff",
+  gainsboro: "#dcdcdc",
+  ghostwhite: "#f8f8ff",
+  gold: "#ffd700",
+  goldenrod: "#daa520",
+  gray: "#808080",
+  green: "#008000",
+  greenyellow: "#adff2f",
+  grey: "#808080",
+  honeydew: "#f0fff0",
+  hotpink: "#ff69b4",
+  indianred: "#cd5c5c",
+  indigo: "#4b0082",
+  ivory: "#fffff0",
+  khaki: "#f0e68c",
+  lavender: "#e6e6fa",
+  lavenderblush: "#fff0f5",
+  lawngreen: "#7cfc00",
+  lemonchiffon: "#fffacd",
+  lightblue: "#add8e6",
+  lightcoral: "#f08080",
+  lightcyan: "#e0ffff",
+  lightgoldenrodyellow: "#fafad2",
+  lightgray: "#d3d3d3",
+  lightgreen: "#90ee90",
+  lightgrey: "#d3d3d3",
+  lightpink: "#ffb6c1",
+  lightsalmon: "#ffa07a",
+  lightseagreen: "#20b2aa",
+  lightskyblue: "#87cefa",
+  lightslategrey: "#778899",
+  lightsteelblue: "#b0c4de",
+  lightyellow: "#ffffe0",
+  lime: "#00ff00",
+  limegreen: "#32cd32",
+  linen: "#faf0e6",
+  magenta: "#ff00ff",
+  maroon: "#800000",
+  mediumaquamarine: "#66cdaa",
+  mediumblue: "#0000cd",
+  mediumorchid: "#ba55d3",
+  mediumpurple: "#9370db",
+  mediumseagreen: "#3cb371",
+  mediumslateblue: "#7b68ee",
+  mediumspringgreen: "#00fa9a",
+  mediumturquoise: "#48d1cc",
+  mediumvioletred: "#c71585",
+  midnightblue: "#191970",
+  mintcream: "#f5fffa",
+  mistyrose: "#ffe4e1",
+  moccasin: "#ffe4b5",
+  navajowhite: "#ffdead",
+  navy: "#000080",
+  oldlace: "#fdf5e6",
+  olive: "#808000",
+  olivedrab: "#6b8e23",
+  orange: "#ffa500",
+  orangered: "#ff4500",
+  orchid: "#da70d6",
+  palegoldenrod: "#eee8aa",
+  palegreen: "#98fb98",
+  paleturquoise: "#afeeee",
+  palevioletred: "#db7093",
+  papayawhip: "#ffefd5",
+  peachpuff: "#ffdab9",
+  peru: "#cd853f",
+  pink: "#ffc0cb",
+  plum: "#dda0dd",
+  powderblue: "#b0e0e6",
+  purple: "#800080",
+  rebeccapurple: "#663399",
+  red: "#ff0000",
+  rosybrown: "#bc8f8f",
+  royalblue: "#4169e1",
+  saddlebrown: "#8b4513",
+  salmon: "#fa8072",
+  sandybrown: "#f4a460",
+  seagreen: "#2e8b57",
+  seashell: "#fff5ee",
+  sienna: "#a0522d",
+  silver: "#c0c0c0",
+  skyblue: "#87ceeb",
+  slateblue: "#6a5acd",
+  slategray: "#708090",
+  snow: "#fffafa",
+  springgreen: "#00ff7f",
+  steelblue: "#4682b4",
+  tan: "#d2b48c",
+  teal: "#008080",
+  thistle: "#d8bfd8",
+  tomato: "#ff6347",
+  turquoise: "#40e0d0",
+  violet: "#ee82ee",
+  wheat: "#f5deb3",
+  white: "#ffffff",
+  whitesmoke: "#f5f5f5",
+  yellow: "#ffff00",
+  yellowgreen: "#9acd32",
+};
 
 /**
  * Returns a (possibly new) colour with all values in the range [0..1]
@@ -107,7 +252,7 @@ export type Type = IRgb | IHsl | IRgbNormalised | IHslNormalised;
  *
  * @param colour If colour is already normalised, it is returned instead.
  */
-export function normalise(colour: IRgb | IRgbNormalised): IRgbNormalised;
+export function normalise(colour: Rgb | RgbNormalised): RgbNormalised;
 /**
  * Returns a (possibly new) colour with all values in the range [0..1]
  *
@@ -115,7 +260,7 @@ export function normalise(colour: IRgb | IRgbNormalised): IRgbNormalised;
  *
  * @param colour If colour is already normalised, it is returned instead.
  */
-export function normalise(colour: IHsl | IHslNormalised): IHslNormalised;
+export function normalise(colour: Hsl | HslNormalised): HslNormalised;
 /**
  * Returns a (possibly new) colour with all values in the range [0..1]
  *
@@ -123,7 +268,7 @@ export function normalise(colour: IHsl | IHslNormalised): IHslNormalised;
  *
  * @param colour If colour is already normalised, it is returned instead.
  */
-export function normalise(colour: Type): IRgbNormalised | IHslNormalised;
+export function normalise(colour: Type): RgbNormalised | HslNormalised;
 export function normalise(colour: Type) {
   switch (colour.colourSpace) {
     case "rgb-normalised":
@@ -158,7 +303,7 @@ export function normalise(colour: Type) {
  *
  * @param colour If colour is already denormalised, it is returned instead.
  */
-export function denormalise(colour: IHslNormalised | IHsl): IHsl;
+export function denormalise(colour: HslNormalised | Hsl): Hsl;
 /**
  * Returns a (possibly new) colour in the range [0..255]
  *
@@ -166,12 +311,12 @@ export function denormalise(colour: IHslNormalised | IHsl): IHsl;
  *
  * @param colour If colour is already denormalised, it is returned instead.
  */
-export function denormalise(colour: IRgbNormalised | IRgb): IRgb;
+export function denormalise(colour: RgbNormalised | Rgb): Rgb;
 /**
  * @inheritdoc
  * @param colour If colour is already denormalised, it is returned instead.
  */
-export function denormalise(colour: Type): IHsl | IRgb;
+export function denormalise(colour: Type): Hsl | Rgb;
 export function denormalise(colour: Type) {
   switch (colour.colourSpace) {
     case "rgb":
@@ -207,7 +352,7 @@ export function denormalise(colour: Type) {
  * @param colour If colour is already in HSL denormalised, it is returned
  *               instead.
  */
-export function toHsl(colour: Type): IHsl {
+export function toHsl(colour: Type): Hsl {
   if (colour.colourSpace === "hsl") {
     return colour;
   }
@@ -230,7 +375,7 @@ export function toHsl(colour: Type): IHsl {
   const Cmin = Math.min(c.r, c.g, c.b);
   const delta = Cmax - Cmin;
 
-  const result: IHsl = {
+  const result: Hsl = {
     h: 0,
     s: 0,
     l: (Cmax + Cmin) / 2,
@@ -271,7 +416,7 @@ export function toHsl(colour: Type): IHsl {
  * @param colour If colour is already in HSL denormalised, it is returned
  *               instead.
  */
-export function toRgb(colour: Type): IRgb {
+export function toRgb(colour: Type): Rgb {
   if (colour.colourSpace === "rgb") {
     return colour;
   }
@@ -362,56 +507,34 @@ export function toString(colour: Type): string {
   }
 }
 
-export function rgb(r: number, g: number, b: number, normalised?: false): IRgb;
-export function rgb(
-  r: number,
-  g: number,
-  b: number,
-  normalised: true,
-): IRgbNormalised;
-export function rgb(
-  r: number,
-  g: number,
-  b: number,
-  normalised: boolean,
-): IRgb | IRgbNormalised;
-export function rgb(
-  r: number,
-  g: number,
-  b: number,
-  normalised: boolean = false,
-): IRgb | IRgbNormalised {
-  return rgba(r, g, b, 1, normalised);
-}
-
 export function rgba(
   r: number,
   g: number,
   b: number,
   a: number,
   normalised?: false,
-): IRgb;
+): Rgb;
 export function rgba(
   r: number,
   g: number,
   b: number,
   a: number,
   normalised: true,
-): IRgbNormalised;
+): RgbNormalised;
 export function rgba(
   r: number,
   g: number,
   b: number,
   a: number,
   normalised: boolean,
-): IRgb | IRgbNormalised;
+): Rgb | RgbNormalised;
 export function rgba(
   r: number,
   g: number,
   b: number,
   a: number,
   normalised = false,
-): IRgb | IRgbNormalised {
+): Rgb | RgbNormalised {
   if (normalised === true) {
     return {
       r: _.clamp(r, 0, 1),
@@ -431,26 +554,26 @@ export function rgba(
   }
 }
 
-export function hsl(h: number, s: number, l: number, normalised?: false): IHsl;
-export function hsl(
-  h: number,
-  s: number,
-  l: number,
+export function rgb(r: number, g: number, b: number, normalised?: false): Rgb;
+export function rgb(
+  r: number,
+  g: number,
+  b: number,
   normalised: true,
-): IHslNormalised;
-export function hsl(
-  h: number,
-  s: number,
-  l: number,
+): RgbNormalised;
+export function rgb(
+  r: number,
+  g: number,
+  b: number,
   normalised: boolean,
-): IHsl | IHslNormalised;
-export function hsl(
-  h: number,
-  s: number,
-  l: number,
+): Rgb | RgbNormalised;
+export function rgb(
+  r: number,
+  g: number,
+  b: number,
   normalised = false,
-): IHsl | IHslNormalised {
-  return hsla(h, s, l, 1, normalised);
+): Rgb | RgbNormalised {
+  return rgba(r, g, b, 1, normalised);
 }
 
 export function hsla(
@@ -459,28 +582,28 @@ export function hsla(
   l: number,
   a: number,
   normalised?: false,
-): IHsl;
+): Hsl;
 export function hsla(
   h: number,
   s: number,
   l: number,
   a: number,
   normalised: true,
-): IHslNormalised;
+): HslNormalised;
 export function hsla(
   h: number,
   s: number,
   l: number,
   a: number,
   normalised: boolean,
-): IHsl | IHslNormalised;
+): Hsl | HslNormalised;
 export function hsla(
   h: number,
   s: number,
   l: number,
   a: number,
   normalised = false,
-): IHsl | IHslNormalised {
+): Hsl | HslNormalised {
   if (normalised === true) {
     return {
       h: clampCycle(h, 1),
@@ -500,7 +623,29 @@ export function hsla(
   }
 }
 
-export function parse(h: string): IRgb | IHsl {
+export function hsl(h: number, s: number, l: number, normalised?: false): Hsl;
+export function hsl(
+  h: number,
+  s: number,
+  l: number,
+  normalised: true,
+): HslNormalised;
+export function hsl(
+  h: number,
+  s: number,
+  l: number,
+  normalised: boolean,
+): Hsl | HslNormalised;
+export function hsl(
+  h: number,
+  s: number,
+  l: number,
+  normalised = false,
+): Hsl | HslNormalised {
+  return hsla(h, s, l, 1, normalised);
+}
+
+export function parse(h: string): Rgb | Hsl {
   if (h.startsWith("#")) {
     switch (h.length) {
       case 4:
@@ -618,9 +763,9 @@ export function almostEqual(c1: Type, c2: Type, epsilon = EPSILON): boolean {
  * @param below the colour (including alpha) to be composited below. Note that
  *              if not provided, white is used.
  */
-export function composite(above: Type, below?: Type): IRgbNormalised {
+export function composite(above: Type, below?: Type): RgbNormalised {
 
-  const belowNorm: IRgbNormalised =
+  const belowNorm: RgbNormalised =
     below ?
       normalise(toRgb(below))
     :
@@ -782,154 +927,11 @@ Transform<Type, Type> {
   };
 }
 
-/**
- * CSS3 colours as defined in
- * https://facebook.github.io/react-native/docs/0.55/colours
- */
-const CSS3_COLOURS: _.Dictionary<string> = {
-  aliceblue: "#f0f8ff",
-  antiquewhite: "#faebd7",
-  aqua: "#00ffff",
-  aquamarine: "#7fffd4",
-  azure: "#f0ffff",
-  beige: "#f5f5dc",
-  bisque: "#ffe4c4",
-  black: "#000000",
-  blanchedalmond: "#ffebcd",
-  blue: "#0000ff",
-  blueviolet: "#8a2be2",
-  brown: "#a52a2a",
-  burlywood: "#deb887",
-  cadetblue: "#5f9ea0",
-  chartreuse: "#7fff00",
-  chocolate: "#d2691e",
-  coral: "#ff7f50",
-  cornflowerblue: "#6495ed",
-  cornsilk: "#fff8dc",
-  crimson: "#dc143c",
-  cyan: "#00ffff",
-  darkblue: "#00008b",
-  darkcyan: "#008b8b",
-  darkgoldenrod: "#b8860b",
-  darkgray: "#a9a9a9",
-  darkgreen: "#006400",
-  darkgrey: "#a9a9a9",
-  darkkhaki: "#bdb76b",
-  darkmagenta: "#8b008b",
-  darkolivegreen: "#556b2f",
-  darkorange: "#ff8c00",
-  darkorchid: "#9932cc",
-  darkred: "#8b0000",
-  darksalmon: "#e9967a",
-  darkseagreen: "#8fbc8f",
-  darkslateblue: "#483d8b",
-  darkslategrey: "#2f4f4f",
-  darkturquoise: "#00ced1",
-  darkviolet: "#9400d3",
-  deeppink: "#ff1493",
-  deepskyblue: "#00bfff",
-  dimgray: "#696969",
-  dimgrey: "#696969",
-  dodgerblue: "#1e90ff",
-  firebrick: "#b22222",
-  floralwhite: "#fffaf0",
-  forestgreen: "#228b22",
-  fuchsia: "#ff00ff",
-  gainsboro: "#dcdcdc",
-  ghostwhite: "#f8f8ff",
-  gold: "#ffd700",
-  goldenrod: "#daa520",
-  gray: "#808080",
-  green: "#008000",
-  greenyellow: "#adff2f",
-  grey: "#808080",
-  honeydew: "#f0fff0",
-  hotpink: "#ff69b4",
-  indianred: "#cd5c5c",
-  indigo: "#4b0082",
-  ivory: "#fffff0",
-  khaki: "#f0e68c",
-  lavender: "#e6e6fa",
-  lavenderblush: "#fff0f5",
-  lawngreen: "#7cfc00",
-  lemonchiffon: "#fffacd",
-  lightblue: "#add8e6",
-  lightcoral: "#f08080",
-  lightcyan: "#e0ffff",
-  lightgoldenrodyellow: "#fafad2",
-  lightgray: "#d3d3d3",
-  lightgreen: "#90ee90",
-  lightgrey: "#d3d3d3",
-  lightpink: "#ffb6c1",
-  lightsalmon: "#ffa07a",
-  lightseagreen: "#20b2aa",
-  lightskyblue: "#87cefa",
-  lightslategrey: "#778899",
-  lightsteelblue: "#b0c4de",
-  lightyellow: "#ffffe0",
-  lime: "#00ff00",
-  limegreen: "#32cd32",
-  linen: "#faf0e6",
-  magenta: "#ff00ff",
-  maroon: "#800000",
-  mediumaquamarine: "#66cdaa",
-  mediumblue: "#0000cd",
-  mediumorchid: "#ba55d3",
-  mediumpurple: "#9370db",
-  mediumseagreen: "#3cb371",
-  mediumslateblue: "#7b68ee",
-  mediumspringgreen: "#00fa9a",
-  mediumturquoise: "#48d1cc",
-  mediumvioletred: "#c71585",
-  midnightblue: "#191970",
-  mintcream: "#f5fffa",
-  mistyrose: "#ffe4e1",
-  moccasin: "#ffe4b5",
-  navajowhite: "#ffdead",
-  navy: "#000080",
-  oldlace: "#fdf5e6",
-  olive: "#808000",
-  olivedrab: "#6b8e23",
-  orange: "#ffa500",
-  orangered: "#ff4500",
-  orchid: "#da70d6",
-  palegoldenrod: "#eee8aa",
-  palegreen: "#98fb98",
-  paleturquoise: "#afeeee",
-  palevioletred: "#db7093",
-  papayawhip: "#ffefd5",
-  peachpuff: "#ffdab9",
-  peru: "#cd853f",
-  pink: "#ffc0cb",
-  plum: "#dda0dd",
-  powderblue: "#b0e0e6",
-  purple: "#800080",
-  rebeccapurple: "#663399",
-  red: "#ff0000",
-  rosybrown: "#bc8f8f",
-  royalblue: "#4169e1",
-  saddlebrown: "#8b4513",
-  salmon: "#fa8072",
-  sandybrown: "#f4a460",
-  seagreen: "#2e8b57",
-  seashell: "#fff5ee",
-  sienna: "#a0522d",
-  silver: "#c0c0c0",
-  skyblue: "#87ceeb",
-  slateblue: "#6a5acd",
-  slategray: "#708090",
-  snow: "#fffafa",
-  springgreen: "#00ff7f",
-  steelblue: "#4682b4",
-  tan: "#d2b48c",
-  teal: "#008080",
-  thistle: "#d8bfd8",
-  tomato: "#ff6347",
-  turquoise: "#40e0d0",
-  violet: "#ee82ee",
-  wheat: "#f5deb3",
-  white: "#ffffff",
-  whitesmoke: "#f5f5f5",
-  yellow: "#ffff00",
-  yellowgreen: "#9acd32",
-};
+/** Debug colour in RGB (0..255) */
+export const DEBUG_COLOR_RGB = toRgb(DEBUG_COLOUR);
+/** Debug colour in RGB (0..1) */
+export const DEBUG_COLOR_RGB_NORMALIZED = normalise(toRgb(DEBUG_COLOUR));
+/** Debug colour in HSL (0..360, 0..100) */
+export const DEBUG_COLOR_HSL = toHsl(DEBUG_COLOUR);
+/** Debug colour in HSL (0..1, 0..1) */
+export const DEBUG_COLOR_HSL_NORMALIZED = normalise(toHsl(DEBUG_COLOUR));

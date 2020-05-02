@@ -19,18 +19,21 @@
  * @barrel export hash
  */
 
+/* eslint-disable @typescript-eslint/no-use-before-define, no-magic-numbers */
+
 // explicitly disable bitwise operator linting. I know what I'm doing here.
 // tslint:disable:no-bitwise
 
 import _ from "lodash";
 import * as Integer from "./Integer";
+import { Unconstrained } from './Types';
 
 /**
  * A context that serves as the basis for our universal hashing algorithm.
  * The hashes generated are universal, and are solely deterministic based on
  * the randomly generated values given inside this object.
  */
-export interface IContext {
+export interface Context {
   /** the multiplier, (Range=[1, p)) */
   a: Integer.Type;
   /** the intercept, (Range=[0, p)) */
@@ -141,7 +144,7 @@ const P: Integer.Type[] = [
   1073741419 | 0, 1073741441 | 0, 1073741467 | 0, 1073741477 | 0,
   1073741503 | 0, 1073741527 | 0, 1073741561 | 0, 1073741567 | 0,
   1073741621 | 0, 1073741651 | 0, 1073741663 | 0, 1073741671 | 0,
-] as any;
+] as Unconstrained;
 
 /**
  * Generate a random number in the field [n] almost uniformly.
@@ -157,7 +160,7 @@ function randomInt(fieldSize: number): Integer.Type {
  * Generates a context for our hash function. This is equivalent to picking
  * a random hash in the hash family.
  */
-export function generateContext(): IContext {
+export function generateContext(): Context {
   // We know that P's length is always within safe range.
   // Implementation note: MAKE SURE THAT IT IS.
   const i = randomInt(P.length);
@@ -197,7 +200,7 @@ function rot27(x: Integer.Type): Integer.Type {
 }
 
 /** The stored current internal context */
-let context: IContext = generateContext();
+let context: Context = generateContext();
 
 /**
  * Hashes a current machine word using the given context. This function is only
@@ -211,7 +214,7 @@ let context: IContext = generateContext();
  * @param ctx the context on which to hash.
  * @returns the hashed machine word.
  */
-export function UNSAFE_hash(x: number, ctx: IContext): Integer.Type {
+export function UNSAFE_hash(x: number, ctx: Context): Integer.Type {
   return (((ctx.a * x) + ctx.b) % ctx.p) % M as Integer.Type;
 }
 
@@ -219,7 +222,7 @@ export function UNSAFE_hash(x: number, ctx: IContext): Integer.Type {
  * Regenerates a context for the internal hashing function.
  * @returns the previously used context.
  */
-export function regenerateContext(): IContext {
+export function regenerateContext(): Context {
   const previousContext = context;
   context = generateContext();
   return previousContext;
@@ -230,7 +233,7 @@ export function regenerateContext(): IContext {
  * @param ctx The context to be set
  * @returns the previously used context.
  */
-export function setContext(ctx: IContext): IContext {
+export function setContext(ctx: Context): Context {
   const previousContext = context;
   context = _.merge({}, ctx);
   return previousContext;
@@ -250,7 +253,7 @@ export function setContext(ctx: IContext): IContext {
 export function UNSAFE_hashBuffer(
   buffer: ArrayBuffer,
   initValue: Integer.Type,
-  ctx: IContext,
+  ctx: Context,
 ): Integer.Type {
   const view = new Uint32Array(buffer);
   const len = view.length;
@@ -268,7 +271,7 @@ export function UNSAFE_hashBuffer(
  * @param ctx An optional context to use. If not provided, will use the current
  * stored context.
  */
-export function hashString(s: string, ctx: IContext = context): Integer.Type {
+export function hashString(s: string, ctx: Context = context): Integer.Type {
   // instead of explicitly creating a buffer, we simply iterate through charCode
   const len = s.length;
   let acc = ctx.string;
@@ -277,6 +280,23 @@ export function hashString(s: string, ctx: IContext = context): Integer.Type {
     acc = UNSAFE_hash(x, ctx);
   }
   return acc;
+}
+/**
+ * Hashes a JavaScript number as a floating point. This hash function differs
+ * from `hashNumber` regarding the following:
+ * 1. Representations of `NaN` hash to different values. (e.g.
+ * h(0x7ff0....0) != h(0x7fff....f))
+ * 2. `0` and `-0` are hashed to different values.
+ * 3. Does not distinguish between integers and floats. All values are hashed
+ * as floats.
+ * @param n the number to be hashed
+ * @param ctx if provided, this context will be used. Otherwise, will use the
+ * current stored context.
+ */
+export function hashFloat(n: number, ctx: Context = context): Integer.Type {
+  const q = new Float64Array(1);
+  q[0] = n;
+  return UNSAFE_hashBuffer(q.buffer, ctx.float, ctx);
 }
 
 /**
@@ -289,7 +309,7 @@ export function hashString(s: string, ctx: IContext = context): Integer.Type {
  * @param ctx if provided, this context will be used. Otherwise, will use the
  * current stored context.
  */
-export function hashNumber(n: number, ctx: IContext = context): Integer.Type {
+export function hashNumber(n: number, ctx: Context = context): Integer.Type {
   if (Number.isNaN(n)) {
     return UNSAFE_hash(ctx.nan, ctx);
   }
@@ -309,28 +329,10 @@ export function hashNumber(n: number, ctx: IContext = context): Integer.Type {
       // n has between 31 bits and 52 bits
       const lower = n & Integer.INT_MAX;
       const upper = n >> 31;
-      return UNSAFE_hash(rot27((ctx.int ^ lower) as any) ^ upper, ctx);
+      return UNSAFE_hash(rot27((ctx.int ^ lower) as Integer.Type) ^ upper, ctx);
     }
   }
   return hashFloat(n, ctx);
-}
-
-/**
- * Hashes a JavaScript number as a floating point. This hash function differs
- * from `hashNumber` regarding the following:
- * 1. Representations of `NaN` hash to different values. (e.g.
- * h(0x7ff0....0) != h(0x7fff....f))
- * 2. `0` and `-0` are hashed to different values.
- * 3. Does not distinguish between integers and floats. All values are hashed
- * as floats.
- * @param n the number to be hashed
- * @param ctx if provided, this context will be used. Otherwise, will use the
- * current stored context.
- */
-export function hashFloat(n: number, ctx: IContext = context): Integer.Type {
-  const q = new Float64Array(1);
-  q[0] = n;
-  return UNSAFE_hashBuffer(q.buffer, ctx.float, ctx);
 }
 
 /**
@@ -342,7 +344,7 @@ export function hashFloat(n: number, ctx: IContext = context): Integer.Type {
  */
 export function hashPrimitive(
   prim: boolean | undefined | null,
-  ctx: IContext = context,
+  ctx: Context = context,
 ): Integer.Type {
   if (prim === null) {
     return UNSAFE_hash(ctx.null, ctx);
@@ -353,7 +355,75 @@ export function hashPrimitive(
   // (prim | 0) returns 1 if prim is true, 0 if prim is false.
   // we use the standard integer hashing alg. to ensure that these two are
   // always different
-  return UNSAFE_hash(ctx.boolean ^ (prim as any | 0), ctx);
+  return UNSAFE_hash(ctx.boolean ^ (prim as Unconstrained | 0), ctx);
+}
+
+/**
+ * Hashes an array or arraylike.
+ * @param arr An array-like to hash. Note that string objects hashed with this
+ * function returns a different value than `hashString`.
+ * @param ctx if provided, this context will be used. Otherwise, will use the
+ * current stored context.
+ */
+export function hashArray(
+  arr: ArrayLike<unknown>,
+  ctx: Context = context,
+): Integer.Type {
+  const length = arr.length;
+
+  const hashedLength = hashNumber(length, ctx);
+  let acc = Integer.UNSAFE_ofNumber(ctx.array ^ hashedLength);
+  for (let i = 0; i < length; ++i) {
+    // we want to explicitly remove functions and symbols
+    switch (typeof arr[i]) {
+      case "symbol":
+      case "function":
+        acc = UNSAFE_hash(rot27(acc) ^ ctx.array, ctx);
+        break;
+      default:
+        const x = rot27(acc) ^ hash(arr[i], ctx);
+        acc = UNSAFE_hash(x, ctx);
+    }
+  }
+  return acc;
+}
+
+function typedKeyof<T>(obj: T): Array<keyof T> {
+  return Object.keys(obj) as Unconstrained;
+}
+
+/**
+ * Hashes an object. Note that this function uses `hash` function for
+ * recursively hashing members. Values generated using hashObject for `null`,
+ * string objects and arrays differ from values generated using `hash`.
+ * @param obj The object to hash
+ * @param ctx if provided, this context will be used. Otherwise, will use the
+ * current stored context.
+ */
+export function hashObject<K extends {}>(
+  obj: K,
+  ctx: Context = context,
+): Integer.Type {
+  const keys: Array<keyof K> = typedKeyof(obj);
+  const buffer = new Int32Array(OBJECT_KEY_BUCKET_SIZE_POWER_OF_2);
+
+  for (const key of keys) {
+    const loc = hashString(`${key}`, ctx) & OBJECT_KEY_BUCKET_MASK;
+    const staged = rot27(hashString(`${key}`, ctx));
+    switch (typeof obj[key]) {
+      case "undefined":
+        continue;
+      case "function":
+      case "symbol":
+        buffer[loc] ^= UNSAFE_hash(staged ^ ctx.object, ctx);
+        break;
+      default:
+        const x = hash(obj[key], ctx);
+        buffer[loc] ^= UNSAFE_hash(staged ^ x, ctx);
+    }
+  }
+
+  return UNSAFE_hashBuffer(buffer.buffer, ctx.object, ctx);
 }
 
 /**
@@ -367,7 +437,7 @@ export function hashPrimitive(
  * @param ctx if provided, this context will be used. Otherwise, will use the
  * current stored context.
  */
-export function hash(obj: any, ctx: IContext = context): Integer.Type {
+export function hash(obj: Unconstrained, ctx: Context = context): Integer.Type {
   switch (typeof obj) {
     case "number":
       return hashNumber(obj, ctx);
@@ -416,74 +486,13 @@ export function hash(obj: any, ctx: IContext = context): Integer.Type {
 }
 
 /**
- * Hashes an array or arraylike.
- * @param arr An array-like to hash. Note that string objects hashed with this
- * function returns a different value than `hashString`.
- * @param ctx if provided, this context will be used. Otherwise, will use the
- * current stored context.
- */
-export function hashArray(
-  arr: ArrayLike<any>,
-  ctx: IContext = context,
-): Integer.Type {
-  const length = arr.length;
-
-  const hashedLength = hashNumber(length, ctx);
-  let acc = Integer.UNSAFE_ofNumber(ctx.array ^ hashedLength);
-  for (let i = 0; i < length; ++i) {
-    // we want to explicitly remove functions and symbols
-    switch (typeof arr[i]) {
-      case "symbol":
-      case "function":
-        acc = UNSAFE_hash(rot27(acc) ^ ctx.array, ctx);
-        break;
-      default:
-        const x = rot27(acc) ^ hash(arr[i], ctx);
-        acc = UNSAFE_hash(x, ctx);
-    }
-  }
-  return acc;
-}
-
-/**
- * Hashes an object. Note that this function uses `hash` function for
- * recursively hashing members. Values generated using hashObject for `null`,
- * string objects and arrays differ from values generated using `hash`.
- * @param obj The object to hash
- * @param ctx if provided, this context will be used. Otherwise, will use the
- * current stored context.
- */
-export function hashObject(obj: any, ctx: IContext = context): Integer.Type {
-  const keys = Object.keys(obj);
-  const buffer = new Int32Array(OBJECT_KEY_BUCKET_SIZE_POWER_OF_2);
-
-  for (const key of keys) {
-    const loc = hashString(key, ctx) & OBJECT_KEY_BUCKET_MASK;
-    const staged = rot27(hashString(key, ctx));
-    switch (typeof obj[key]) {
-      case "undefined":
-        continue;
-      case "function":
-      case "symbol":
-        buffer[loc] ^= UNSAFE_hash(staged ^ ctx.object, ctx);
-        break;
-      default:
-        const x = hash(obj[key], ctx);
-        buffer[loc] ^= UNSAFE_hash(staged ^ x, ctx);
-    }
-  }
-
-  return UNSAFE_hashBuffer(buffer.buffer, ctx.object, ctx);
-}
-
-/**
  * Exposes the actual context object used by the hash function. Note that
  * updating this value will inadvertently cause all hashes to not equal to
  * previous hashes. If you need to get the current context to perform certain
  * actions, please use `getCurrentContext` instead.
  * @returns the current context object
  */
-export function UNSAFE_exposeCurrentContext(): IContext {
+export function UNSAFE_exposeCurrentContext(): Context {
   return context;
 }
 
@@ -491,15 +500,15 @@ export function UNSAFE_exposeCurrentContext(): IContext {
  * Provides a copy of the current context used by the hash function.
  * @returns a copy of the cuurrent context object
  */
-export function getCurrentContext(): IContext {
+export function getCurrentContext(): Context {
   return _.merge({}, context);
 }
 
-export function validateContext(ctx: any): ctx is IContext {
+export function validateContext(ctx: Unconstrained): ctx is Context {
   if (typeof ctx !== "object") {
     return false;
   }
-  const c: IContext = ctx;
+  const c: Context = ctx;
   return (
     typeof c.a === "number" && (c.a | 0) === c.a &&
     typeof c.b === "number" && (c.b | 0) === c.b &&

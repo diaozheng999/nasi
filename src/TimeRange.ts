@@ -3,7 +3,6 @@
  * @author Diao Zheng
  * @file defines a range of time
  */
-import _ from "lodash";
 import * as Option from "./Option";
 
 /**
@@ -60,7 +59,7 @@ export class TimeRange {
 
   private isWellDefined = true;
 
-  constructor(start: number = -Infinity, end: number = Infinity) {
+  constructor(start = -Infinity, end = Infinity) {
     this.start = start;
     this.end = end;
 

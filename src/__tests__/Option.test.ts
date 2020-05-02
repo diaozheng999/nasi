@@ -3,10 +3,11 @@
  * @author Diao Zheng
  * @file Unit tests for src/Core/Option.ts
  */
-// tslint:disable-next-line:no-reference
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../node_modules/@types/jest/index.d.ts" />
 
 import * as Option from "../Option";
+import { Unconstrained } from "../Types";
 
 // isSome
 
@@ -102,15 +103,15 @@ test("value reference 2", () => {
 });
 
 test("value side effect 1", () => {
-  const a: any = {};
-  const b: any = Option.value(a, {});
+  const a: Unconstrained = {};
+  const b: Unconstrained = Option.value(a, {});
   a.c = 1;
   expect(b.c).toBe(1);
 });
 
 test("value side effect 2", () => {
-  const a: any = {};
-  const b: any = Option.value(undefined, a);
+  const a: Unconstrained = {};
+  const b: Unconstrained = Option.value(undefined, a);
   a.c = 1;
   expect(b.c).toBe(1);
 });
@@ -366,7 +367,7 @@ test("some value", () => {
 
 test("some reference", () => {
   const a = {b: 0};
-  (Option.some(a) as any).b += 1;
+  (Option.some(a) as Unconstrained).b += 1;
   expect(a.b).toBe(1);
 });
 
@@ -402,7 +403,7 @@ test("choice none", () => {
 });
 
 describe("assertSome", () => {
-  // tslint:disable:no-console
+  /* eslint-disable no-console */
 
   const memoizedConsoleWarn = console.warn;
 
@@ -423,7 +424,7 @@ describe("assertSome", () => {
     expect(Option.assertSome(undefined)).toBeUndefined();
     expect(console.warn).toBeCalled();
   });
-  // tslint:enable:no-console
+  /* eslint-enable no-console */
 });
 
 describe("wrapNotNull", () => {
@@ -490,7 +491,7 @@ describe("option execute", () => {
     expect(exec).toBeCalledWith(1, 2);
   });
 
-  test("execute some", () => {
+  test("execute some with constraint", () => {
     const exec = jest.fn((..._) => 3);
     expect(Option.execute(exec, 1, 2)).toBe(3);
     expect(exec).toBeCalledWith(1, 2);

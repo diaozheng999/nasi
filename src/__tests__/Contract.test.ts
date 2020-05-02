@@ -6,7 +6,7 @@
 
 import * as Contract from "../Contract";
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 const memoisedConsoleWarn = console.warn;
 const memoisedConsoleError = console.error;
@@ -83,8 +83,8 @@ describe("assertNever", () => {
 class TestClass {
   public static requirePass = jest.fn(() => true);
   public static requireFail = jest.fn(() => false);
-  public static ensurePass = jest.fn((__: number) => true);
-  public static ensureFail = jest.fn((__: number) => false);
+  public static ensurePass = jest.fn((_: number) => true);
+  public static ensureFail = jest.fn((_: number) => false);
   public static fn = jest.fn();
   @Contract.requires(TestClass.requirePass)
   @Contract.ensures(TestClass.ensurePass)
