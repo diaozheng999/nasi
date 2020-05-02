@@ -1,5 +1,8 @@
-## Unpublished
+## 1.2.6
 - Improve performance of `Semaphore`.
+- Migrate from TSLint to ESLint.
+- Update `typescript` to `3.8.3`.
+- Update `tslib` to `1.11.1`.
 
 ## 1.2.5
 - Add `ctor` to `F`.

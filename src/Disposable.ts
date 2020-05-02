@@ -12,7 +12,6 @@ const DISPOSE = Symbol.for("nasi/DISPOSE");
 const IS_DISPOSED = Symbol.for("nasi/IS_DISPOSED");
 const DISPOSABLE = Symbol.for("nasi/DISPOSABLE");
 
-// @barrel export InstanceDisposable
 // @barrel export CustomDisposable
 
 export interface CustomDisposable {
