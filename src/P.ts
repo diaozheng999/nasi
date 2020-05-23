@@ -85,6 +85,16 @@ function boundDisjunctionExecutor<T>(
   return false;
 }
 
+export function and<T, U extends T, V extends T>(
+  p1: TypedPredicate<T, U>,
+  p2: TypedPredicate<T, V>,
+): TypedPredicate<T, U & V>;
+export function and<T, U extends T, V extends T, W extends T>(
+  p1: TypedPredicate<T, U>,
+  p2: TypedPredicate<T, V>,
+  p3: TypedPredicate<T, W>,
+): TypedPredicate<T, U & V & W>;
+export function and<T>(...predicates: Array<Predicate<T>>): Predicate<T>;
 export function and<T>(...predicates: Array<Predicate<T>>): Predicate<T> {
   const filtered: Array<Predicate<T>> = [];
 
@@ -213,6 +223,21 @@ export function existsWith<T extends {}, K extends keyof T>(
     predicate,
     false,
   );
+}
+
+export function map<T, U extends T, V>(
+  generateEvidence: (value: T) => V,
+  verifier: Predicate<V>,
+): TypedPredicate<T, U>;
+export function map<T, U>(
+  mapper: (value: T) => U,
+  pred: Predicate<U>,
+): Predicate<T>;
+export function map<T, U>(
+  mapper: (value: T) => U,
+  pred: Predicate<U>,
+): Predicate<T> {
+  return F.compose(pred, mapper);
 }
 
 export function pred<T>(predicate: Predicate<T>): Predicate<T> {

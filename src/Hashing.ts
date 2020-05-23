@@ -24,7 +24,6 @@
 // explicitly disable bitwise operator linting. I know what I'm doing here.
 // tslint:disable:no-bitwise
 
-import _ from "lodash";
 import * as Integer from "./Integer";
 import { Unconstrained } from './Types';
 
@@ -235,7 +234,7 @@ export function regenerateContext(): Context {
  */
 export function setContext(ctx: Context): Context {
   const previousContext = context;
-  context = _.merge({}, ctx);
+  context = {...ctx};
   return previousContext;
 }
 
@@ -501,7 +500,7 @@ export function UNSAFE_exposeCurrentContext(): Context {
  * @returns a copy of the cuurrent context object
  */
 export function getCurrentContext(): Context {
-  return _.merge({}, context);
+  return {...context};
 }
 
 export function validateContext(ctx: Unconstrained): ctx is Context {

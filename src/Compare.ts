@@ -6,7 +6,6 @@
 
 // @barrel export all
 
-import _ from "lodash";
 import { isNone, isSome, Type as Option, wrapNotNaN } from "./Option";
 
 type ComparisonResult = -1 | 0 | 1;
@@ -16,7 +15,7 @@ export type Type<T> = Comparison<T>;
 export type Unordered<T> = (a: T, b: T) => boolean;
 
 export function clampToComparison(result: number): ComparisonResult {
-  if (!result || _.isNaN(result)) {
+  if (!result || isNaN(result)) {
     return 0;
   }
 

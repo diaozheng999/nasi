@@ -5,7 +5,7 @@
  * @barrel export all
  */
 
-import _ from "lodash";
+import clamp from "lodash/clamp"; // @deno rewrite
 
 /* eslint-disable no-magic-numbers */
 
@@ -50,7 +50,7 @@ export type Transform<T extends Type, U extends Type> = (src: T) => U;
  *               period.
  */
 export function clampCycle(value: number, period: number): number {
-  if (_.isNaN(value)) {
+  if (isNaN(value)) {
     return value;
   }
   if (value < 0) {
@@ -471,10 +471,10 @@ export function toString(colour: Type): string {
 
     case "rgb":
       if (
-        !_.isFinite(colour.r) ||
-        !_.isFinite(colour.g) ||
-        !_.isFinite(colour.b) ||
-        !_.isFinite(colour.a)
+        !isFinite(colour.r) ||
+        !isFinite(colour.g) ||
+        !isFinite(colour.b) ||
+        !isFinite(colour.a)
       ) {
         return toString(DEBUG_COLOUR);
       }
@@ -489,10 +489,10 @@ export function toString(colour: Type): string {
 
     case "hsl":
       if (
-        !_.isFinite(colour.h) ||
-        !_.isFinite(colour.s) ||
-        !_.isFinite(colour.l) ||
-        !_.isFinite(colour.a)
+        !isFinite(colour.h) ||
+        !isFinite(colour.s) ||
+        !isFinite(colour.l) ||
+        !isFinite(colour.a)
       ) {
         return toString(DEBUG_COLOUR);
       }
@@ -537,18 +537,18 @@ export function rgba(
 ): Rgb | RgbNormalised {
   if (normalised === true) {
     return {
-      r: _.clamp(r, 0, 1),
-      g: _.clamp(g, 0, 1),
-      b: _.clamp(b, 0, 1),
-      a: _.clamp(a, 0, 1),
+      r: clamp(r, 0, 1),
+      g: clamp(g, 0, 1),
+      b: clamp(b, 0, 1),
+      a: clamp(a, 0, 1),
       colourSpace: "rgb-normalised",
     };
   } else {
     return {
-      r: _.clamp(r, 0, 255),
-      g: _.clamp(g, 0, 255),
-      b: _.clamp(b, 0, 255),
-      a: _.clamp(a, 0, 1),
+      r: clamp(r, 0, 255),
+      g: clamp(g, 0, 255),
+      b: clamp(b, 0, 255),
+      a: clamp(a, 0, 1),
       colourSpace: "rgb",
     };
   }
@@ -607,17 +607,17 @@ export function hsla(
   if (normalised === true) {
     return {
       h: clampCycle(h, 1),
-      s: _.clamp(s, 0, 1),
-      l: _.clamp(l, 0, 1),
-      a: _.clamp(a, 0, 1),
+      s: clamp(s, 0, 1),
+      l: clamp(l, 0, 1),
+      a: clamp(a, 0, 1),
       colourSpace: "hsl-normalised",
     };
   } else {
     return {
       h: clampCycle(h, 360),
-      s: _.clamp(s, 0, 100),
-      l: _.clamp(l, 0, 100),
-      a: _.clamp(a, 0, 1),
+      s: clamp(s, 0, 100),
+      l: clamp(l, 0, 100),
+      a: clamp(a, 0, 1),
       colourSpace: "hsl",
     };
   }

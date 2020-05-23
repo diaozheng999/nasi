@@ -7,7 +7,7 @@
 
 /* eslint-disable */
 
-import SplayTree from "splaytree";
+import SplayTree from "splaytree"; // @deno rewrite
 import * as Hashing from "./Hashing";
 import * as Option from "./Option";
 

@@ -4,7 +4,7 @@
  * @file A simple in-memory cache that stores computed objects and somesuch.
  * @barrel export createMemoryCache
  */
-import LRUCache from "lru-cache";
+import LRUCache from "lru-cache"; // @deno rewrite
 import { Disposable, IDisposable } from "./Disposable";
 import * as Hashing from "./Hashing";
 import * as Option from "./Option";
