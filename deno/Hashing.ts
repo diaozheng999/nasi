@@ -24,13 +24,13 @@
 // explicitly disable bitwise operator linting. I know what I'm doing here.
 // tslint:disable:no-bitwise
 
-import isNumber from "lodash/isNumber"; // @deno rewrite
-import isString from "lodash/isString"; // @deno rewrite
-import isBoolean from "lodash/isBoolean"; // @deno rewrite
-import isArrayLike from "lodash/isArrayLike"; // @deno rewrite
+import isNumber from "https://deno.land/x/lodash/isNumber.js";
+import isString from "https://deno.land/x/lodash/isString.js";
+import isBoolean from "https://deno.land/x/lodash/isBoolean.js";
+import isArrayLike from "https://deno.land/x/lodash/isArrayLike.js";
 
-import * as Integer from "./Integer";
-import { Unconstrained } from './Types';
+import * as Integer from "./Integer.ts";
+import { Unconstrained } from "./Types.ts";
 
 /**
  * A context that serves as the basis for our universal hashing algorithm.

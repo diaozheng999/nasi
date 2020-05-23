@@ -5,8 +5,8 @@
  * @barrel export all
  */
 
-import clamp from "lodash/clamp"; // @deno rewrite
-import has from "lodash/has"; // @deno rewrite
+import clamp from "https://deno.land/x/lodash/clamp.js";
+import has from "https://deno.land/x/lodash/has.js";
 
 /* eslint-disable no-magic-numbers */
 
@@ -17,8 +17,7 @@ export type ColourSpace =
   | "hsl"
   | "rgb"
   | "hsl-normalised"
-  | "rgb-normalised"
-;
+  | "rgb-normalised";
 
 /** The smallest value for floating point comparisons */
 export const EPSILON = 1e-8;
@@ -98,7 +97,7 @@ export type Type = Rgb | Hsl | RgbNormalised | HslNormalised;
  * CSS3 colours as defined in
  * https://facebook.github.io/react-native/docs/0.55/colours
  */
-const CSS3_COLOURS: _.Dictionary<string> = {
+const CSS3_COLOURS: Record<string, string> = {
   aliceblue: "#f0f8ff",
   antiquewhite: "#faebd7",
   aqua: "#00ffff",
@@ -433,20 +432,17 @@ export function toRgb(colour: Type): Rgb {
 
   const m = sl.l - c / 2;
 
-  const [r, g, b] =
-    h < 60 ?
-      [c, x, 0]
-    : h < 120 ?
-      [x, c, 0]
-    : h < 180 ?
-      [0, c, x]
-    : h < 240 ?
-      [0, x, c]
-    : h < 300 ?
-      [x, 0, c]
-    :
-      [c, 0, x]
-  ;
+  const [r, g, b] = h < 60
+    ? [c, x, 0]
+    : h < 120
+    ? [x, c, 0]
+    : h < 180
+    ? [0, c, x]
+    : h < 240
+    ? [0, x, c]
+    : h < 300
+    ? [x, 0, c]
+    : [c, 0, x];
 
   return denormalise({
     r: r + m,
@@ -765,13 +761,9 @@ export function almostEqual(c1: Type, c2: Type, epsilon = EPSILON): boolean {
  *              if not provided, white is used.
  */
 export function composite(above: Type, below?: Type): RgbNormalised {
-
-  const belowNorm: RgbNormalised =
-    below ?
-      normalise(toRgb(below))
-    :
-      rgb(1, 1, 1, true)
-  ;
+  const belowNorm: RgbNormalised = below
+    ? normalise(toRgb(below))
+    : rgb(1, 1, 1, true);
 
   const aboveNorm = normalise(toRgb(above));
   const oneMinusAlpha = 1 - aboveNorm.a;
@@ -915,10 +907,12 @@ export function compose<
   tx8: Transform<T8, T9>,
   tx9: Transform<T9, TR>,
 ): Transform<T1, TR>;
-export function compose(...transforms: Array<Transform<Type, Type>>):
-Transform<Type, Type>;
-export function compose(...transforms: Array<Transform<Type, Type>>):
-Transform<Type, Type> {
+export function compose(
+  ...transforms: Array<Transform<Type, Type>>
+): Transform<Type, Type>;
+export function compose(
+  ...transforms: Array<Transform<Type, Type>>
+): Transform<Type, Type> {
   return (initial: Type) => {
     let colour = initial;
     for (const transform of transforms) {

@@ -2,7 +2,7 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     tsconfigRootDir: __dirname,
-    project: ['./tsconfig.lint.json'],
+    project: ["./tsconfig.lint.json"],
   },
   extends: [
     "plugin:@typescript-eslint/recommended",
@@ -11,7 +11,7 @@ module.exports = {
   ],
   rules: {
     "no-console": "error",
-    "no-magic-numbers": ["error", { ignore: [0, 1, -1, 2, 0.5, -2, -0.5]}],
+    "no-magic-numbers": ["error", { ignore: [0, 1, -1, 2, 0.5, -2, -0.5] }],
     "no-multiple-empty-lines": ["error", { max: 1, maxEOF: 0 }],
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -80,7 +80,7 @@ module.exports = {
       files: ["*.test.ts", "*.test.tsx"],
       "rules": {
         "no-magic-numbers": "off",
-      }
-    }
-  ]
+      },
+    },
+  ],
 };
