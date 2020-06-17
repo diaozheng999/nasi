@@ -9,6 +9,10 @@ module.exports = {
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:jest/recommended",
   ],
+  ignorePatterns: [
+    'deno/',
+    'dist/',
+  ],
   rules: {
     "no-console": "error",
     "no-magic-numbers": ["error", { ignore: [0, 1, -1, 2, 0.5, -2, -0.5] }],
