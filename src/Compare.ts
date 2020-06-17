@@ -54,10 +54,14 @@ export function str(a: string, b: string) {
   return clampToComparison(a.localeCompare(b));
 }
 
+export function strEq<T extends string>(a: T, b: string): b is T;
+export function strEq(a: string, b: string): boolean;
 /**
  * Timing-safe string comparison function.
  * @see https://snyk.io/blog/node-js-timing-attack-ccc-ctf/
- * @param a The string to compare against.
+ * @param a The string to compare against. The function will always take time
+ *          proportional to length of a. Use this as the enum to compare
+ *          against.
  * @param b The string to compare with.
  */
 export function strEq(a: string, b: string): boolean {
