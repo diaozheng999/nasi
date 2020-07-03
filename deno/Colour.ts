@@ -4,27 +4,16 @@
  * @file Utility functions to manipulate colours
  * @barrel export all
  */
-
 import clamp from "https://deno.land/x/lodash/clamp.js";
 import has from "https://deno.land/x/lodash/has.js";
-
 /* eslint-disable no-magic-numbers */
-
 // removing sort keys because usage of "RGB" or "HSV" is canonical.
 // tslint:disable:object-literal-sort-keys
-
-export type ColourSpace =
-  | "hsl"
-  | "rgb"
-  | "hsl-normalised"
-  | "rgb-normalised";
-
+export type ColourSpace = "hsl" | "rgb" | "hsl-normalised" | "rgb-normalised";
 /** The smallest value for floating point comparisons */
 export const EPSILON = 1e-8;
-
 /** Precomputed value for 1 - epsilon (to avoid floating point errors) */
 export const ONE_MINUS_EPSILON = 1 - EPSILON;
-
 /**
  * The debug colour to print if any of the colour values becomes NaN after
  * a transform.
@@ -39,9 +28,7 @@ export const DEBUG_COLOUR: Type = {
   a: 1,
   colourSpace: "rgb",
 };
-
 export type Transform<T extends Type, U extends Type> = (src: T) => U;
-
 /**
  * Returns a value between [0, period) if value is not NaN or Infinity. NaN
  * otherwise.
@@ -58,7 +45,6 @@ export function clampCycle(value: number, period: number): number {
   }
   return value % period;
 }
-
 export interface Hsl {
   h: number;
   s: number;
@@ -66,7 +52,6 @@ export interface Hsl {
   a: number;
   colourSpace: "hsl";
 }
-
 export interface Rgb {
   r: number;
   g: number;
@@ -74,7 +59,6 @@ export interface Rgb {
   a: number;
   colourSpace: "rgb";
 }
-
 export interface HslNormalised {
   h: number;
   s: number;
@@ -82,7 +66,6 @@ export interface HslNormalised {
   a: number;
   colourSpace: "hsl-normalised";
 }
-
 export interface RgbNormalised {
   r: number;
   g: number;
@@ -90,14 +73,12 @@ export interface RgbNormalised {
   a: number;
   colourSpace: "rgb-normalised";
 }
-
 export type Type = Rgb | Hsl | RgbNormalised | HslNormalised;
-
 /**
  * CSS3 colours as defined in
  * https://facebook.github.io/react-native/docs/0.55/colours
  */
-const CSS3_COLOURS: Record<string, string> = {
+const CSS3_COLOURS: _.Dictionary<string> = {
   aliceblue: "#f0f8ff",
   antiquewhite: "#faebd7",
   aqua: "#00ffff",
@@ -244,7 +225,6 @@ const CSS3_COLOURS: Record<string, string> = {
   yellow: "#ffff00",
   yellowgreen: "#9acd32",
 };
-
 /**
  * Returns a (possibly new) colour with all values in the range [0..1]
  *
@@ -274,7 +254,6 @@ export function normalise(colour: Type) {
     case "rgb-normalised":
     case "hsl-normalised":
       return colour;
-
     case "rgb":
       return {
         r: colour.r / 255,
@@ -283,7 +262,6 @@ export function normalise(colour: Type) {
         a: colour.a,
         colourSpace: "rgb-normalised",
       };
-
     case "hsl":
       return {
         h: colour.h / 360,
@@ -294,7 +272,6 @@ export function normalise(colour: Type) {
       };
   }
 }
-
 /**
  * Returns a (possibly new) colour with hue in the range [0..360] (degrees)
  * and saturation and lightness in the range [0..100] (%)
@@ -322,7 +299,6 @@ export function denormalise(colour: Type) {
     case "rgb":
     case "hsl":
       return colour;
-
     case "rgb-normalised":
       return {
         r: colour.r * 255,
@@ -331,7 +307,6 @@ export function denormalise(colour: Type) {
         a: colour.a,
         colourSpace: "rgb",
       };
-
     case "hsl-normalised":
       return {
         h: colour.h * 360,
@@ -342,7 +317,6 @@ export function denormalise(colour: Type) {
       };
   }
 }
-
 /**
  * Converts a colour to HSL colour space, with hue in the range [0..360)
  * degrees, saturation and lightness in range [0, 100]%.
@@ -360,10 +334,8 @@ export function toHsl(colour: Type): Hsl {
     return denormalise(colour);
   }
   const c = normalise(colour);
-
   let Cmax: number = c.r;
   let argCmax: "r" | "g" | "b" = "r";
-
   if (c.g >= c.r && c.g >= c.b) {
     Cmax = c.g;
     argCmax = "g";
@@ -371,10 +343,8 @@ export function toHsl(colour: Type): Hsl {
     Cmax = c.b;
     argCmax = "b";
   }
-
   const Cmin = Math.min(c.r, c.g, c.b);
   const delta = Cmax - Cmin;
-
   const result: Hsl = {
     h: 0,
     s: 0,
@@ -382,31 +352,24 @@ export function toHsl(colour: Type): Hsl {
     a: c.a,
     colourSpace: "hsl",
   };
-
   if (delta > 0) {
     switch (argCmax) {
       case "r":
         result.h = 60 * (((c.g - c.b) / delta) % 6);
         break;
-
       case "g":
         result.h = 60 * ((c.b - c.r) / delta + 2);
         break;
-
       case "b":
         result.h = 60 * ((c.r - c.g) / delta + 4);
         break;
     }
-
     result.s = delta / (1 - Math.abs(2 * result.l - 1));
   }
-
   result.l *= 100;
   result.s *= 100;
-
   return result;
 }
-
 /**
  * Converts a colour to RGB colour space, with each colour in the range
  * [0, 255].
@@ -423,27 +386,23 @@ export function toRgb(colour: Type): Rgb {
   if (colour.colourSpace === "rgb-normalised") {
     return denormalise(colour);
   }
-
   const h = denormalise(colour).h;
   const sl = normalise(colour);
-
   const c = (1 - Math.abs(2 * sl.l - 1)) * sl.s;
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-
   const m = sl.l - c / 2;
-
-  const [r, g, b] = h < 60
-    ? [c, x, 0]
-    : h < 120
-    ? [x, c, 0]
-    : h < 180
-    ? [0, c, x]
-    : h < 240
-    ? [0, x, c]
-    : h < 300
-    ? [x, 0, c]
-    : [c, 0, x];
-
+  const [r, g, b] =
+    h < 60
+      ? [c, x, 0]
+      : h < 120
+      ? [x, c, 0]
+      : h < 180
+      ? [0, c, x]
+      : h < 240
+      ? [0, x, c]
+      : h < 300
+      ? [x, 0, c]
+      : [c, 0, x];
   return denormalise({
     r: r + m,
     g: g + m,
@@ -452,7 +411,6 @@ export function toRgb(colour: Type): Rgb {
     colourSpace: "rgb-normalised",
   });
 }
-
 /**
  * Constructs a CSS-compatible string from a colour. If NaN/Infinity occurs,
  * the debug colour is returned instead.
@@ -465,7 +423,6 @@ export function toString(colour: Type): string {
     case "hsl-normalised":
     case "rgb-normalised":
       return toString(denormalise(colour));
-
     case "rgb":
       if (
         !isFinite(colour.r) ||
@@ -483,7 +440,6 @@ export function toString(colour: Type): string {
       } else {
         return `rgba(${r}, ${g}, ${b}, ${colour.a})`;
       }
-
     case "hsl":
       if (
         !isFinite(colour.h) ||
@@ -503,34 +459,33 @@ export function toString(colour: Type): string {
       }
   }
 }
-
 export function rgba(
   r: number,
   g: number,
   b: number,
   a: number,
-  normalised?: false,
+  normalised?: false
 ): Rgb;
 export function rgba(
   r: number,
   g: number,
   b: number,
   a: number,
-  normalised: true,
+  normalised: true
 ): RgbNormalised;
 export function rgba(
   r: number,
   g: number,
   b: number,
   a: number,
-  normalised: boolean,
+  normalised: boolean
 ): Rgb | RgbNormalised;
 export function rgba(
   r: number,
   g: number,
   b: number,
   a: number,
-  normalised = false,
+  normalised = false
 ): Rgb | RgbNormalised {
   if (normalised === true) {
     return {
@@ -550,56 +505,54 @@ export function rgba(
     };
   }
 }
-
 export function rgb(r: number, g: number, b: number, normalised?: false): Rgb;
 export function rgb(
   r: number,
   g: number,
   b: number,
-  normalised: true,
+  normalised: true
 ): RgbNormalised;
 export function rgb(
   r: number,
   g: number,
   b: number,
-  normalised: boolean,
+  normalised: boolean
 ): Rgb | RgbNormalised;
 export function rgb(
   r: number,
   g: number,
   b: number,
-  normalised = false,
+  normalised = false
 ): Rgb | RgbNormalised {
   return rgba(r, g, b, 1, normalised);
 }
-
 export function hsla(
   h: number,
   s: number,
   l: number,
   a: number,
-  normalised?: false,
+  normalised?: false
 ): Hsl;
 export function hsla(
   h: number,
   s: number,
   l: number,
   a: number,
-  normalised: true,
+  normalised: true
 ): HslNormalised;
 export function hsla(
   h: number,
   s: number,
   l: number,
   a: number,
-  normalised: boolean,
+  normalised: boolean
 ): Hsl | HslNormalised;
 export function hsla(
   h: number,
   s: number,
   l: number,
   a: number,
-  normalised = false,
+  normalised = false
 ): Hsl | HslNormalised {
   if (normalised === true) {
     return {
@@ -619,70 +572,58 @@ export function hsla(
     };
   }
 }
-
 export function hsl(h: number, s: number, l: number, normalised?: false): Hsl;
 export function hsl(
   h: number,
   s: number,
   l: number,
-  normalised: true,
+  normalised: true
 ): HslNormalised;
 export function hsl(
   h: number,
   s: number,
   l: number,
-  normalised: boolean,
+  normalised: boolean
 ): Hsl | HslNormalised;
 export function hsl(
   h: number,
   s: number,
   l: number,
-  normalised = false,
+  normalised = false
 ): Hsl | HslNormalised {
   return hsla(h, s, l, 1, normalised);
 }
-
 export function parse(h: string): Rgb | Hsl {
   if (h.startsWith("#")) {
     switch (h.length) {
       case 4:
         return parse(`#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}ff`);
-
       case 5:
         return parse(
-          `#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}${h[4]}${h[4]}`,
+          `#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}${h[4]}${h[4]}`
         );
-
       case 7:
         return parse(`${h}ff`);
-
       case 9:
         const r = parseInt(h.substr(1, 2), 16);
         const g = parseInt(h.substr(3, 2), 16);
         const b = parseInt(h.substr(5, 2), 16);
         const a = parseInt(h.substr(7, 2), 16) / 255;
         return rgba(r, g, b, a);
-
       default:
         throw new TypeError("Invalid colour expression.");
     }
   }
-
   if (has(CSS3_COLOURS, h)) {
     return parse(CSS3_COLOURS[h]);
   }
-
   const nexp = "\\s*((\\d+)|(\\d*\\.\\d+))\\s*";
   const nexpp = "\\s*((\\d+)|(\\d*\\.\\d+))\\%\\s*";
-
   const rgbExpr = RegExp(`^rgb\\s*\\(${nexp},${nexp},${nexp}\\)$`);
   const rgbaExpr = RegExp(`^rgba\\s*\\(${nexp},${nexp},${nexp},${nexp}\\)$`);
-
   const hslExpr = RegExp(`^hsl\\s*\\(${nexp},${nexpp},${nexpp}\\)$`);
   const hslaExpr = RegExp(`^hsla\\s*\\(${nexp},${nexpp},${nexpp},${nexp}\\)$`);
-
   const sanitised = h.toLowerCase().trim();
-
   if (sanitised.startsWith("rgba")) {
     const rgbaMatched = rgbaExpr.exec(sanitised);
     if (rgbaMatched) {
@@ -690,7 +631,7 @@ export function parse(h: string): Rgb | Hsl {
         parseFloat(rgbaMatched[1]),
         parseFloat(rgbaMatched[4]),
         parseFloat(rgbaMatched[7]),
-        parseFloat(rgbaMatched[10]),
+        parseFloat(rgbaMatched[10])
       );
     }
   } else if (sanitised.startsWith("rgb")) {
@@ -699,11 +640,10 @@ export function parse(h: string): Rgb | Hsl {
       return rgb(
         parseFloat(rgbMatched[1]),
         parseFloat(rgbMatched[4]),
-        parseFloat(rgbMatched[7]),
+        parseFloat(rgbMatched[7])
       );
     }
   }
-
   if (sanitised.startsWith("hsla")) {
     const hslaMatched = hslaExpr.exec(sanitised);
     if (hslaMatched) {
@@ -711,7 +651,7 @@ export function parse(h: string): Rgb | Hsl {
         parseFloat(hslaMatched[1]),
         parseFloat(hslaMatched[4]),
         parseFloat(hslaMatched[7]),
-        parseFloat(hslaMatched[10]),
+        parseFloat(hslaMatched[10])
       );
     }
   } else if (sanitised.startsWith("hsl")) {
@@ -720,23 +660,19 @@ export function parse(h: string): Rgb | Hsl {
       return hsl(
         parseFloat(hslMatched[1]),
         parseFloat(hslMatched[4]),
-        parseFloat(hslMatched[7]),
+        parseFloat(hslMatched[7])
       );
     }
   }
-
   throw new TypeError("Invalid colour expression.");
 }
-
 function eq(a: number, b: number, epsilon: number) {
   const n = a - b;
   return n <= epsilon && n >= -epsilon;
 }
-
 export function almostEqual(c1: Type, c2: Type, epsilon = EPSILON): boolean {
   const nc1 = toRgb(c1);
   const nc2 = toRgb(c2);
-
   return (
     eq(nc1.r, nc2.r, epsilon) &&
     eq(nc1.g, nc2.g, epsilon) &&
@@ -744,7 +680,6 @@ export function almostEqual(c1: Type, c2: Type, epsilon = EPSILON): boolean {
     eq(nc1.a, nc2.a, epsilon)
   );
 }
-
 /**
  * Compose two colours above and below. If below is not defined, it's assumed
  * to be white, i.e. rgba(255, 255, 255, 1)
@@ -764,58 +699,47 @@ export function composite(above: Type, below?: Type): RgbNormalised {
   const belowNorm: RgbNormalised = below
     ? normalise(toRgb(below))
     : rgb(1, 1, 1, true);
-
   const aboveNorm = normalise(toRgb(above));
   const oneMinusAlpha = 1 - aboveNorm.a;
-
   const composeFn = (caTimesAlpha: number, cbTimesAlpha: number) =>
     caTimesAlpha + cbTimesAlpha * oneMinusAlpha;
-
   return rgba(
     composeFn(aboveNorm.r * aboveNorm.a, belowNorm.r * belowNorm.a),
     composeFn(aboveNorm.g * aboveNorm.a, belowNorm.g * belowNorm.a),
     composeFn(aboveNorm.b * aboveNorm.a, belowNorm.b * belowNorm.a),
     aboveNorm.a + belowNorm.a * oneMinusAlpha,
-    true,
+    true
   );
 }
-
 export function compose<T extends Type>(): Transform<T, T>;
-export function compose<
-  T1 extends Type,
-  TR extends Type,
->(
-  tx1: Transform<T1, TR>,
+export function compose<T1 extends Type, TR extends Type>(
+  tx1: Transform<T1, TR>
 ): Transform<T1, TR>;
-export function compose<
-  T1 extends Type,
-  T2 extends Type,
-  TR extends Type,
->(
+export function compose<T1 extends Type, T2 extends Type, TR extends Type>(
   tx1: Transform<T1, T2>,
-  tx2: Transform<T2, TR>,
+  tx2: Transform<T2, TR>
 ): Transform<T1, TR>;
 export function compose<
   T1 extends Type,
   T2 extends Type,
   T3 extends Type,
-  TR extends Type,
+  TR extends Type
 >(
   tx1: Transform<T1, T2>,
   tx2: Transform<T2, T3>,
-  tx3: Transform<T3, TR>,
+  tx3: Transform<T3, TR>
 ): Transform<T1, TR>;
 export function compose<
   T1 extends Type,
   T2 extends Type,
   T3 extends Type,
   T4 extends Type,
-  TR extends Type,
+  TR extends Type
 >(
   tx1: Transform<T1, T2>,
   tx2: Transform<T2, T3>,
   tx3: Transform<T3, T4>,
-  tx4: Transform<T4, TR>,
+  tx4: Transform<T4, TR>
 ): Transform<T1, TR>;
 export function compose<
   T1 extends Type,
@@ -823,13 +747,13 @@ export function compose<
   T3 extends Type,
   T4 extends Type,
   T5 extends Type,
-  TR extends Type,
+  TR extends Type
 >(
   tx1: Transform<T1, T2>,
   tx2: Transform<T2, T3>,
   tx3: Transform<T3, T4>,
   tx4: Transform<T4, T5>,
-  tx5: Transform<T5, TR>,
+  tx5: Transform<T5, TR>
 ): Transform<T1, TR>;
 export function compose<
   T1 extends Type,
@@ -838,14 +762,14 @@ export function compose<
   T4 extends Type,
   T5 extends Type,
   T6 extends Type,
-  TR extends Type,
+  TR extends Type
 >(
   tx1: Transform<T1, T2>,
   tx2: Transform<T2, T3>,
   tx3: Transform<T3, T4>,
   tx4: Transform<T4, T5>,
   tx5: Transform<T5, T6>,
-  tx6: Transform<T6, TR>,
+  tx6: Transform<T6, TR>
 ): Transform<T1, TR>;
 export function compose<
   T1 extends Type,
@@ -855,7 +779,7 @@ export function compose<
   T5 extends Type,
   T6 extends Type,
   T7 extends Type,
-  TR extends Type,
+  TR extends Type
 >(
   tx1: Transform<T1, T2>,
   tx2: Transform<T2, T3>,
@@ -863,7 +787,7 @@ export function compose<
   tx4: Transform<T4, T5>,
   tx5: Transform<T5, T6>,
   tx6: Transform<T6, T7>,
-  tx7: Transform<T7, TR>,
+  tx7: Transform<T7, TR>
 ): Transform<T1, TR>;
 export function compose<
   T1 extends Type,
@@ -874,7 +798,7 @@ export function compose<
   T6 extends Type,
   T7 extends Type,
   T8 extends Type,
-  TR extends Type,
+  TR extends Type
 >(
   tx1: Transform<T1, T2>,
   tx2: Transform<T2, T3>,
@@ -883,7 +807,7 @@ export function compose<
   tx5: Transform<T5, T6>,
   tx6: Transform<T6, T7>,
   tx7: Transform<T7, T8>,
-  tx8: Transform<T8, TR>,
+  tx8: Transform<T8, TR>
 ): Transform<T1, TR>;
 export function compose<
   T1 extends Type,
@@ -895,7 +819,7 @@ export function compose<
   T7 extends Type,
   T8 extends Type,
   T9 extends Type,
-  TR extends Type,
+  TR extends Type
 >(
   tx1: Transform<T1, T2>,
   tx2: Transform<T2, T3>,
@@ -905,7 +829,7 @@ export function compose<
   tx6: Transform<T6, T7>,
   tx7: Transform<T7, T8>,
   tx8: Transform<T8, T9>,
-  tx9: Transform<T9, TR>,
+  tx9: Transform<T9, TR>
 ): Transform<T1, TR>;
 export function compose(
   ...transforms: Array<Transform<Type, Type>>
@@ -921,7 +845,6 @@ export function compose(
     return colour;
   };
 }
-
 /** Debug colour in RGB (0..255) */
 export const DEBUG_COLOR_RGB = toRgb(DEBUG_COLOUR);
 /** Debug colour in RGB (0..1) */

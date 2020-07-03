@@ -8,21 +8,15 @@
  *
  * @barrel export all
  */
-
 import { assertNever as newAssertNever } from "./Contract.ts";
 import { devOnly } from "./Dev.ts";
 import { Unconstrained, AnyArray } from "./Types.ts";
-
 type Option<T> = T | undefined;
-
 type WrappedRecordOption<T, K extends string | number | symbol> = {
   [key in K]?: T;
 }[K];
-
 export type Type<T> = Option<T>;
-
 export type Nullable<T> = T | null;
-
 /**
  * Asserts the value type of T, where `T` is constructed as `Option.Type`.
  *
@@ -34,8 +28,7 @@ export type Nullable<T> = T | null;
  * As a result, note this edge case:
  * `Option.Some<Option.Type<undefined>>` resolves to `never`
  */
-export type Some<T> = T extends undefined ? never
-  : T;
+export type Some<T> = T extends undefined ? never : T;
 /**
  * Asserts the value type of T, where T is constructed as `Option.Nullable`.
  *
@@ -54,9 +47,7 @@ export type Some<T> = T extends undefined ? never
  * cases, where `null` is not part of the type `T`, we get
  * `Option.NotNull<Option.Type<T>>` resolving to `T`.
  */
-export type NotNull<T> = T extends undefined | null ? never
-  : T;
-
+export type NotNull<T> = T extends undefined | null ? never : T;
 /**
  * returns true iff option is Some(value)
  * @param opt option
@@ -64,19 +55,17 @@ export type NotNull<T> = T extends undefined | null ? never
 export function isSome<T>(opt: Option<T>): opt is T {
   return opt !== undefined;
 }
-
 /**
  * returns true iff option is None
  * @param opt option
  */
 export function isNone<T extends {}, K extends string | number | symbol>(
-  opt: WrappedRecordOption<T, K>,
+  opt: WrappedRecordOption<T, K>
 ): opt is undefined;
 export function isNone<T>(opt: Option<T>): opt is undefined;
 export function isNone<T>(opt: Option<T>): opt is undefined {
   return opt === undefined;
 }
-
 /**
  * returns value if option is Some<value>, defaultValue otherwise.
  * @param opt option
@@ -84,12 +73,11 @@ export function isNone<T>(opt: Option<T>): opt is undefined {
  */
 export function value<
   V,
-  T extends { [k in K]?: Option<V> },
-  K extends keyof T,
->(
-  opt: T[K] | undefined,
-  defaultValue: V,
-): V;
+  T extends {
+    [k in K]?: Option<V>;
+  },
+  K extends keyof T
+>(opt: T[K] | undefined, defaultValue: V): V;
 export function value<T>(opt: Option<T>, defaultValue: T): T;
 export function value<T>(opt: Option<T>, defaultValue: T): T {
   if (isSome(opt)) {
@@ -97,7 +85,6 @@ export function value<T>(opt: Option<T>, defaultValue: T): T {
   }
   return defaultValue;
 }
-
 /**
  * Similar to value, returns value if option is Some<value>, defaultValue
  * otherwise. Note that defaultValue will not be evaluated until absolutely
@@ -115,7 +102,6 @@ export function value_<T, TDefaultArguments extends Unconstrained[]>(
   }
   return defaultValue(...defaultParams);
 }
-
 /**
  * Returns value iff option is Some<value>, otherwise throws exception.
  * @param opt option
@@ -126,7 +112,6 @@ export function valOf<T>(opt: Option<T>): T {
   }
   throw new Error("Option is None.");
 }
-
 /**
  * Maps the option type such that if option is Some(a), then will return
  * Some(f(a)). Note that option wrapping is not supported, i.e. if fn has
@@ -143,7 +128,6 @@ export function map<T, U>(opt: Option<T>, fn: ($0: T) => U): Option<U> {
   }
   return undefined;
 }
-
 /**
  * Wraps a truthy value into an option. Falsy values are:
  *  * `false: boolean`
@@ -159,7 +143,6 @@ export function truthy<T>(val: Nullable<T>): Option<T>;
 export function truthy<T>(val: T): Option<T> {
   return val || undefined;
 }
-
 /**
  * Special case of `truthy` to only wrap `NaN` to None. (0 is wrapped to
  * Some(0)).
@@ -168,7 +151,6 @@ export function truthy<T>(val: T): Option<T> {
 export function wrapNotNaN(val: number): Option<number> {
   return isNaN(val) ? undefined : val;
 }
-
 /**
  * Special case of `truthy` to only wrap `null` to None.
  * @param val a possibly nullable value.
@@ -176,7 +158,6 @@ export function wrapNotNaN(val: number): Option<number> {
 export function wrapNotNull<T>(val: Nullable<T>): Option<T> {
   return val === null ? undefined : val;
 }
-
 /**
  * Special case of `truthy` to wrap `NaN` and +/- infinity to None. (0 and -0
  * are wrapped to Some(0)).
@@ -185,7 +166,6 @@ export function wrapNotNull<T>(val: Nullable<T>): Option<T> {
 export function wrapFinite(val: number): Option<number> {
   return Number.isFinite(val) ? val : undefined;
 }
-
 /**
  * Shortcut function that has the following equivalence:
  *
@@ -213,7 +193,6 @@ export function mapNotNaN(val: Option<number>): Option<number> {
   }
   return val;
 }
-
 /**
  * Shortcut function that has the following equivalence:
  *
@@ -241,7 +220,6 @@ export function mapFinite(val: Option<number>): Option<number> {
   }
   return;
 }
-
 /**
  * Returns Some([u, v]) iff opt1 is Some(u) and opt2 is Some(v).
  * @param opt1 u
@@ -253,7 +231,6 @@ export function both<T, U>(opt1: Option<T>, opt2: Option<U>): Option<[T, U]> {
   }
   return undefined;
 }
-
 /**
  * Returns Some(value). Throws an error if value is undefined.
  * @param val value
@@ -264,14 +241,12 @@ export function some<T>(val: T): Option<T> {
   }
   return val;
 }
-
 /**
  * Returns None.
  */
 export function none<T>(): Option<T> {
   return undefined;
 }
-
 /**
  * Chooses a value to return depending if option is some value.
  * @param opt an option
@@ -284,7 +259,6 @@ export function choice<T>(opt: Option<unknown>, ifSome: T, ifNone: T): T {
   }
   return ifNone;
 }
-
 /**
  * Choose a value to return depending on if option is some value.
  *
@@ -300,14 +274,13 @@ export function choice<T>(opt: Option<unknown>, ifSome: T, ifNone: T): T {
 export function mapChoice<T, U>(
   opt: Option<T>,
   ifSome: (value: T) => U,
-  ifNone: U,
+  ifNone: U
 ): U {
   if (isSome(opt)) {
     return ifSome(opt);
   }
   return ifNone;
 }
-
 /**
  * Chooses a value to return depending on if option is some value.
  *
@@ -320,14 +293,13 @@ export function mapChoice<T, U>(
 export function mapChoice_<T, U>(
   opt: Option<T>,
   ifSome: (value: T) => U,
-  ifNone: () => U,
+  ifNone: () => U
 ): U {
   if (isSome(opt)) {
     return ifSome(opt);
   }
   return ifNone();
 }
-
 /**
  * Returns true iff both options have values, and comparison function returns
  * true.
@@ -339,21 +311,17 @@ export function mapChoice_<T, U>(
 export function compareSome<T, U>(
   opt1: Option<T>,
   opt2: Option<U>,
-  comparison: (val1: T, val2: U) => boolean,
+  comparison: (val1: T, val2: U) => boolean
 ): boolean {
   if (isSome(opt1) && isSome(opt2)) {
     return comparison(opt1, opt2);
   }
   return false;
 }
-
 /**
  * @deprecated Prefer the use of `assert(Option.isSome, opt)` instead.
  */
-export function assertSome<T>(
-  opt: Option<T>,
-  screenName?: string,
-): T {
+export function assertSome<T>(opt: Option<T>, screenName?: string): T {
   devOnly(() => {
     if (isNone(opt)) {
       const name = screenName ? ` ${screenName}` : "";
@@ -363,7 +331,6 @@ export function assertSome<T>(
   });
   return opt as T;
 }
-
 /**
  * To throw you an compile error since nothing will be `never`.
  * @example
@@ -382,35 +349,33 @@ export function assertNever(x: never): never {
   devOnly(() => {
     // eslint-disable-next-line no-console
     console.warn(
-      `Option.assertNever is deprecated. Use Contract.assertNever instead.`,
+      `Option.assertNever is deprecated. Use Contract.assertNever instead.`
     );
   });
   return newAssertNever(x);
 }
-
 /**
  * @deprecated in TypeScript 3.7 in favour of nil-coelescing operator
  */
 export function property<T extends {}, K extends keyof T>(
   opt: Option<T>,
-  key: K,
+  key: K
 ): Option<T[K]>;
 export function property<T extends {}, K extends keyof T>(
   opt: Option<T>,
   key: K,
-  defaultValue: T[K],
+  defaultValue: T[K]
 ): T[K];
 export function property<T extends {}, K extends keyof T>(
   opt: Option<T>,
   key: K,
-  defaultValue?: T[K],
+  defaultValue?: T[K]
 ): Option<T[K]> {
   if (isSome(opt)) {
     return value(opt[key], defaultValue);
   }
   return defaultValue;
 }
-
 /**
  * @deprecated prefer `f?.(...args)` instead.
  */
@@ -431,7 +396,6 @@ export function execute<TArgs extends AnyArray, TReturn>(
   }
   return;
 }
-
 export function str(
   literals: TemplateStringsArray,
   ...replacer: Array<Option<string>>
@@ -446,7 +410,6 @@ export function str(
   }
   return literal;
 }
-
 /**
  * If opt is a mapping function, execute opt on v. Otherwise, return v.
  *
@@ -458,10 +421,7 @@ export function str(
  * @param opt optional mapping function
  * @param v value to be potentially mapped
  */
-export function callIf<T>(
-  opt: Option<(value: T) => T>,
-  v: T,
-): T {
+export function callIf<T>(opt: Option<(value: T) => T>, v: T): T {
   if (isSome(opt)) {
     return opt(v);
   }

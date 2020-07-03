@@ -4,12 +4,9 @@
  * @file Utility file for dates
  * @barrel export all
  */
-
 import { isNone, Nullable, Type, wrapFinite } from "./Option.ts";
-
 export const MAX_REPRESENTABLE = 8.64e15;
 export const MIN_REPRESENTABLE = -8.64e15;
-
 // tslint:disable:max-line-length
 /**
  * Function to convert timestamp (nullable AND/OR optional number) into
