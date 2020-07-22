@@ -9,10 +9,7 @@ module.exports = {
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:jest/recommended",
   ],
-  ignorePatterns: [
-    'deno/',
-    'dist/',
-  ],
+  ignorePatterns: ["deno/", "dist/"],
   rules: {
     "no-console": "error",
     "no-magic-numbers": ["error", { ignore: [0, 1, -1, 2, 0.5, -2, -0.5] }],
@@ -78,11 +75,21 @@ module.exports = {
     ],
     "jest/no-commented-out-tests": "error",
     "jest/no-disabled-tests": "error",
+
+    // FIXME: temporarily disable some strict rules
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/restrict-plus-operands": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
   },
-  "overrides": [
+  overrides: [
     {
       files: ["*.test.ts", "*.test.tsx"],
-      "rules": {
+      rules: {
         "no-magic-numbers": "off",
       },
     },
