@@ -1,6 +1,8 @@
 ## 1.2.8
 - Include experimental Deno rewrite in Otah
 - Add `clone` function to `Box` to allow React/Redux state updates.
+- Update `typescript` to `3.9.7`.
+- Update `lodash` to `4.17.19`.
 
 ## 1.2.7
 - Deno
