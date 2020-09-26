@@ -1,3 +1,6 @@
+## 1.2.8
+- Update `typescript` to `4.0.3`.
+
 ## 1.2.6
 - Improve performance of `Semaphore`.
 - Migrate from TSLint to ESLint.

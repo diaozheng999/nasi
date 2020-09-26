@@ -11,7 +11,7 @@
 
 import { assertNever as newAssertNever } from "./Contract";
 import { devOnly } from "./Dev";
-import { Unconstrained, AnyArray } from './Types';
+import { Unconstrained, AnyArray, AnyObject } from './Types';
 
 type Option<T> = T | undefined;
 
@@ -77,7 +77,7 @@ export function isSome<T>(opt: Option<T>): opt is T {
  * returns true iff option is None
  * @param opt option
  */
-export function isNone<T extends {}, K extends string | number | symbol>(
+export function isNone<T extends AnyObject, K extends string | number | symbol>(
   opt: WrappedRecordOption<T, K>,
 ): opt is undefined;
 export function isNone<T>(opt: Option<T>): opt is undefined;
@@ -401,16 +401,16 @@ export function assertNever(x: never): never
 /**
  * @deprecated in TypeScript 3.7 in favour of nil-coelescing operator
  */
-export function property<T extends {}, K extends keyof T>(
+export function property<T extends AnyObject, K extends keyof T>(
   opt: Option<T>,
   key: K,
 ): Option<T[K]>;
-export function property<T extends {}, K extends keyof T>(
+export function property<T extends AnyObject, K extends keyof T>(
   opt: Option<T>,
   key: K,
   defaultValue: T[K],
 ): T[K];
-export function property<T extends {}, K extends keyof T>(
+export function property<T extends AnyObject, K extends keyof T>(
   opt: Option<T>,
   key: K,
   defaultValue?: T[K],

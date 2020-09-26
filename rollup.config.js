@@ -8,6 +8,12 @@ module.exports = {
   ],
   external: [
     "lodash",
+    "lodash/clamp",
+    "lodash/has",
+    "lodash/isNumber",
+    "lodash/isString",
+    "lodash/isBoolean",
+    "lodash/isArrayLike",
     "lru-cache",
     "splaytree",
     "tslib",

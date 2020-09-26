@@ -20,6 +20,9 @@ module.exports = {
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": ["error"],
+    "@typescript-eslint/restrict-plus-operands": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       { argsIgnorePattern: "^_", ignoreRestSiblings: true },
@@ -84,6 +87,9 @@ module.exports = {
       files: ["*.test.ts", "*.test.tsx"],
       "rules": {
         "no-magic-numbers": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-return": "off"
       },
     },
   ],

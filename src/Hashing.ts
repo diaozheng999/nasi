@@ -21,6 +21,10 @@
 
 /* eslint-disable @typescript-eslint/no-use-before-define, no-magic-numbers */
 
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 // explicitly disable bitwise operator linting. I know what I'm doing here.
 // tslint:disable:no-bitwise
 
@@ -30,7 +34,7 @@ import isBoolean from "lodash/isBoolean"; // @deno rewrite
 import isArrayLike from "lodash/isArrayLike"; // @deno rewrite
 
 import * as Integer from "./Integer";
-import { Unconstrained } from './Types';
+import { Unconstrained, AnyObject } from './Types';
 
 /**
  * A context that serves as the basis for our universal hashing algorithm.
@@ -404,7 +408,7 @@ function typedKeyof<T>(obj: T): Array<keyof T> {
  * @param ctx if provided, this context will be used. Otherwise, will use the
  * current stored context.
  */
-export function hashObject<K extends {}>(
+export function hashObject<K extends AnyObject>(
   obj: K,
   ctx: Context = context,
 ): Integer.Type {

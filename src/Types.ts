@@ -87,3 +87,5 @@ export type Unconstrained = any;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AnyArray = any[];
+
+export type AnyObject = Record<string, unknown>;
