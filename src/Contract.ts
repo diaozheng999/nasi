@@ -12,7 +12,7 @@
  */
 
 import { devOnly, select } from "./Dev";
-import { AnyArray, AnyObject, Unconstrained } from './Types';
+import { AnyArray, Unconstrained } from './Types';
 
 let shouldBypass = false;
 let shouldBypassMessages: boolean | RegExp = false;
@@ -99,7 +99,8 @@ export function assert<T, K extends T>(
  * @param inv The invariant function. If not an arrow function, the this pointer
  * is bound to the current instance/static object.
  */
-export function requires<T extends AnyObject, TArgs extends AnyArray>(
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function requires<T extends {}, TArgs extends AnyArray>(
   inv: (this: T, ...args: TArgs) => boolean,
   message?: string,
 ) {
@@ -148,7 +149,8 @@ export function requires<T extends AnyObject, TArgs extends AnyArray>(
  * @param inv The invariant function. If not an arrow function, the this pointer
  * is bound to the current instance/static object.
  */
-export function ensures<T extends AnyObject, TReturn>(
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function ensures<T extends {}, TReturn>(
   inv: (this: T, returnValue: TReturn) => boolean,
   message?: string,
 ) {

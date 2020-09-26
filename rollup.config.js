@@ -14,6 +14,7 @@ module.exports = {
     "lodash/isString",
     "lodash/isBoolean",
     "lodash/isArrayLike",
+    "lodash/uniq",
     "lru-cache",
     "splaytree",
     "tslib",
