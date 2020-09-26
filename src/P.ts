@@ -10,7 +10,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import _ from "lodash";
+import uniq from "lodash/uniq";
 import * as F from "./F";
 import * as Option from "./Option";
 import * as Types from "./Types";
@@ -120,7 +120,7 @@ export function and<T>(...predicates: Array<Predicate<T>>): Predicate<T> {
     Array<Predicate<T>>,
     [T],
     boolean
-  >(undefined, _.uniq(filtered));
+  >(undefined, uniq(filtered));
   conjunction[CONJUNCTION] = filtered;
 
   return conjunction;
@@ -146,7 +146,7 @@ export function or<T>(...predicates: Array<Predicate<T>>): Predicate<T> {
     Array<Predicate<T>>,
     [T],
     boolean
-  >(undefined, _.uniq(filtered));
+  >(undefined, uniq(filtered));
   disjunction[DISJUNCTION] = filtered;
 
   return disjunction;

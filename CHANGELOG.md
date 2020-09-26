@@ -1,5 +1,12 @@
 ## 1.2.8
 - Update `typescript` to `4.0.3`.
+- Include experimental Deno rewrite in Otah
+- Add `clone` function to `Box` to allow React/Redux state updates.
+
+## 1.2.7
+- Deno
+- Unit
+- Disposable rewrite
 
 ## 1.2.6
 - Improve performance of `Semaphore`.

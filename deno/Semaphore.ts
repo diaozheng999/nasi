@@ -3,13 +3,11 @@
  * @author Diao Zheng
  * @file Async semaphore useful for async functions and promises.
  */
-
 import { LinkedList } from "./LinkedList.ts";
-
 /**
-  * An asynchronous semaphore implementation that is useful when dealing with
-  * promises.
-  */
+ * An asynchronous semaphore implementation that is useful when dealing with
+ * promises.
+ */
 export class Semaphore {
   /**
    * Returns a promise that resolves after a while.
@@ -18,31 +16,25 @@ export class Semaphore {
   public static sleep(duration: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, duration));
   }
-
   private value: number;
   private debugName = "";
-
   private pendingWaits: LinkedList<() => void> = new LinkedList();
-
   constructor(initialValue: number, debugName?: string) {
     // this will throw an error if inputValue is NaN
     if (!(initialValue > 0)) {
       throw new Error(
-        "Semaphores cannot be initialised with a non-positive number.",
+        "Semaphores cannot be initialised with a non-positive number."
       );
     }
-
     this.value = initialValue;
     if (debugName) {
       this.debugName = debugName;
     }
   }
-
   /** The debug identity helpful for debugging */
   public get identity() {
     return this.debugName;
   }
-
   /**
    * The P (proberen) operation.
    *
@@ -68,7 +60,6 @@ export class Semaphore {
     } else if (rejectAfter && rejectAfter < 0) {
       return Promise.reject();
     }
-
     return new Promise((resolve, reject) => {
       if (rejectAfter) {
         let rejected = false;
@@ -76,20 +67,17 @@ export class Semaphore {
           rejected = true;
           reject();
         }, rejectAfter);
-        this.pendingWaits.push(
-          () => {
-            if (!rejected) {
-              clearTimeout(timeout);
-              resolve();
-            }
-          },
-        );
+        this.pendingWaits.push(() => {
+          if (!rejected) {
+            clearTimeout(timeout);
+            resolve();
+          }
+        });
       } else {
         this.pendingWaits.push(resolve);
       }
     });
   }
-
   /**
    * The V (verhogen) operation.
    */
@@ -97,7 +85,6 @@ export class Semaphore {
     ++this.value;
     this.tryFlushPendingWaits();
   }
-
   private tryFlushPendingWaits = () => {
     while (this.value && this.pendingWaits.length) {
       const wait = this.pendingWaits.shift();

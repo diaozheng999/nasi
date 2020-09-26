@@ -1,7 +1,4 @@
 // tslint:disable:file-name-casing file-header
-
-// GENERATED CODE: DO NOT EDIT
-
 import { Box } from "./Box.ts";
 import * as Colour from "./Colour.ts";
 import * as Compare from "./Compare.ts";
@@ -23,14 +20,12 @@ import * as Integer from "./Integer.ts";
 import { Lazy } from "./Lazy.ts";
 import { LinkedList } from "./LinkedList.ts";
 import { LinkedListItem } from "./LinkedListItem.ts";
+import { createMemoryCache, MemoryCache } from "./MemoryCache.ts";
 import {
-  createMemoryCache,
-  MemoryCache,
-} from "./MemoryCache.ts";
-import {
-  Lock,
-  Mutex,
-} from "./Mutex.ts";
+  createMemoryCacheLegacy,
+  MemoryCacheLegacy,
+} from "./MemoryCacheLegacy.ts";
+import { Lock, Mutex } from "./Mutex.ts";
 import * as Option from "./Option.ts";
 import * as P from "./P.ts";
 import { Registry } from "./Registry.ts";
@@ -38,22 +33,17 @@ import { Semaphore } from "./Semaphore.ts";
 import { TimeRange } from "./TimeRange.ts";
 import * as Types from "./Types.ts";
 import * as Unicode from "./Unicode.ts";
-import {
-  Unique,
-  UniqueValue,
-} from "./Unique.ts";
+import { Unique, UniqueValue } from "./Unique.ts";
 import { Unit } from "./Unit.ts";
 import * as UnitConversion from "./UnitConversion.ts";
 import * as Unsafe from "./Unsafe.ts";
-
 export const assert = Contract.assert;
 export const ensures = Contract.ensures;
-export const invariant = Contract.invariant;
-export const requires = Contract.requires;
-export const assertNever = Contract.assertNever;
 export const isSerialisable = Contract.isSerialisable;
+export const assertNever = Contract.assertNever;
+export const requires = Contract.requires;
+export const invariant = Contract.invariant;
 export const hash = Hashing.hash;
-
 export {
   Box,
   Colour,
@@ -63,6 +53,7 @@ export {
   CoreDisposable,
   CoreObject,
   createMemoryCache,
+  createMemoryCacheLegacy,
   CreditCard,
   CustomDisposable,
   Dev,
@@ -77,6 +68,7 @@ export {
   LinkedListItem,
   Lock,
   MemoryCache,
+  MemoryCacheLegacy,
   Mutex,
   Option,
   P,

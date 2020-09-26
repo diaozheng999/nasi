@@ -4,7 +4,7 @@
  * @file Hashing tests for Hashing
  */
 
-import _ from "lodash";
+import merge from "lodash/merge";
 import * as H from "../Hashing";
 import { Unconstrained } from "../Types";
 
@@ -232,7 +232,7 @@ describe("hash context", () => {
 
   test("set context", () => {
     const exposedContext = H.UNSAFE_exposeCurrentContext();
-    const newContext = _.merge({}, exposedContext);
+    const newContext = merge({}, exposedContext);
     const prevContext = H.setContext(newContext);
     expect(prevContext).toBe(exposedContext);
     expect(H.UNSAFE_exposeCurrentContext()).toStrictEqual(newContext);

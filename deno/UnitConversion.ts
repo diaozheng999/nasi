@@ -4,23 +4,18 @@
  * @file Utility functions to convert backend units into representable units.
  * @barrel export all
  */
-
 export interface Presentable {
   value: string;
   unit: string;
   rawValue: number;
 }
-
 /** @deprecated use `Presentable` instead */
 export type IPresentable = Presentable;
-
 export type Converter = (rawValue: number) => Presentable;
 export type ConverterSpec = (rawValue: number) => readonly [string, string];
-
 const MB_IN_BYTES = 0x100000; // 2^20
 const GB_IN_BYTES = 0x40000000; // 2^30
 const MIN_IN_SEC = 60;
-
 function unlimited() {
   return {
     rawValue: Infinity,
@@ -28,7 +23,6 @@ function unlimited() {
     value: "∞",
   };
 }
-
 function wrapNegativeZero(n: number) {
   /**
    * This is a negative zero checking that is using in polyfill.
@@ -43,22 +37,21 @@ function wrapNegativeZero(n: number) {
     return n;
   }
 }
-
-export const convert = (spec: ConverterSpec): Converter =>
-  (rawValue: number) => {
-    if (isFinite(rawValue) && rawValue >= 0) {
-      const wrappedRawValue = wrapNegativeZero(rawValue);
-      const [value, unit] = spec(wrappedRawValue);
-      return {
-        rawValue: wrappedRawValue,
-        unit,
-        value,
-      };
-    } else {
-      return unlimited();
-    }
-  };
-
+export const convert = (spec: ConverterSpec): Converter => (
+  rawValue: number
+) => {
+  if (isFinite(rawValue) && rawValue >= 0) {
+    const wrappedRawValue = wrapNegativeZero(rawValue);
+    const [value, unit] = spec(wrappedRawValue);
+    return {
+      rawValue: wrappedRawValue,
+      unit,
+      value,
+    };
+  } else {
+    return unlimited();
+  }
+};
 /**
  * A unit converter that takes in the value in bytes, and returns the nearest
  * value rounded up to the nearest MB or .01 GB.
@@ -78,24 +71,19 @@ export const dataFromBytes: Converter = (rawValueInBytes: number) => {
   if (!isFinite(rawValueInBytes) || rawValueInBytes < 0) {
     return unlimited();
   }
-
   const valueInGB = rawValueInBytes / GB_IN_BYTES;
   const rawValue = wrapNegativeZero(rawValueInBytes);
-
   if (valueInGB >= 1) {
     // eslint-disable-next-line no-magic-numbers
     const output = Math.ceil(valueInGB * 100).toFixed(0);
-
     const decimal = output.substr(output.length - 2);
     const integer = output.substring(0, output.length - 2);
-
     return {
       rawValue,
       unit: "GB",
       value: `${integer}.${decimal}`,
     };
   }
-
   const valueInMB = rawValueInBytes / MB_IN_BYTES;
   return {
     rawValue,
@@ -103,7 +91,6 @@ export const dataFromBytes: Converter = (rawValueInBytes: number) => {
     value: Math.ceil(valueInMB).toFixed(0),
   };
 };
-
 /**
  * A unit converter that takes in the value in bytes, and returns the nearest
  * value rounded up to the nearest minute.
@@ -121,7 +108,6 @@ export const voiceFromSeconds: Converter = (rawValueInSeconds: number) => {
   if (!isFinite(rawValueInSeconds) || rawValueInSeconds < 0) {
     return unlimited();
   }
-
   const valueInMinutes = rawValueInSeconds / MIN_IN_SEC;
   const rawValue = wrapNegativeZero(rawValueInSeconds);
   return {
@@ -130,7 +116,6 @@ export const voiceFromSeconds: Converter = (rawValueInSeconds: number) => {
     value: Math.ceil(valueInMinutes).toFixed(0),
   };
 };
-
 /**
  * A unit converter that takes a double-precision floating point, i.e.
  * JavaScript number, and round it up to the nearest integer. This seems to work
@@ -150,7 +135,6 @@ export const integral: Converter = (rawValue: number) => {
     };
   }
 };
-
 export const unwrapJson = (rawValue: number) => {
   if (!isFinite(rawValue) || rawValue < 0) {
     return Infinity;

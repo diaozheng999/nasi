@@ -3,11 +3,8 @@
  * @author Diao Zheng
  * @file Defines various utility methods to process Credit Card numbers.
  */
-
 /* eslint-disable no-magic-numbers */
-
 // @barrel export all
-
 /**
  * Indicates a type of credit card that's supported. Currently, this defines
  * all documented payment types in WireCard's elastic payment API.
@@ -28,9 +25,7 @@ export type Type =
   | "UATP" // UATP
   | "UPI" // UPI
   | "UPOP" // UnionPay Online Payments
-  | "VISA" // VISA
-;
-
+  | "VISA"; // VISA
 /**
  * Chunking credit-card numbers based on
  * https://baymard.com/checkout-usability/credit-card-patterns
@@ -44,7 +39,7 @@ export type Type =
  */
 export function chunkCreditCardNumber(
   cardNumber: string,
-  type?: Type,
+  type?: Type
 ): string[] {
   switch (cardNumber.length) {
     case 13:
@@ -70,14 +65,12 @@ export function chunkCreditCardNumber(
           cardNumber.substr(9, 6),
         ];
       }
-
       // amex-style: 4-6-5
       return [
         cardNumber.substr(0, 4),
         cardNumber.substr(4, 6),
         cardNumber.substr(10, 5),
       ];
-
     case 16:
       // standard (VISA style)
       return [
@@ -86,14 +79,9 @@ export function chunkCreditCardNumber(
         cardNumber.substr(8, 4),
         cardNumber.substr(12, 4),
       ];
-
     case 18:
       // some Russion Maestro cards
-      return [
-        cardNumber.substr(0, 8),
-        cardNumber.substr(8, 10),
-      ];
-
+      return [cardNumber.substr(0, 8), cardNumber.substr(8, 10)];
     case 19:
       if (type === "MAESTRO") {
         // maestro uses 4-4-4-4-3
@@ -106,10 +94,7 @@ export function chunkCreditCardNumber(
         ];
       }
       // assume unionpay style: 6-13
-      return [
-        cardNumber.substr(0, 6),
-        cardNumber.substr(6, 13),
-      ];
+      return [cardNumber.substr(0, 6), cardNumber.substr(6, 13)];
   }
   return [cardNumber];
 }

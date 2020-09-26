@@ -3,31 +3,24 @@
  * @author Diao Zheng
  * @file A doubly-linked list data structure
  */
-
 import { LinkedListItem } from "./LinkedListItem.ts";
 import { isNone, isSome, Type as Option } from "./Option.ts";
-
 export class LinkedList<T> implements Iterable<T> {
   public length = 0;
-
   private head: Option<LinkedListItem<T>>;
   private tail: Option<LinkedListItem<T>>;
-
   constructor(...items: T[]) {
     for (const item of items) {
       this.addToEnd(item);
     }
   }
-
   public getHead(): Option<LinkedListItem<T>> {
     return this.head;
   }
-
   public push = (value: T) => this.addToEnd(value);
   public pop = () => this.removeFromEnd();
   public shift = () => this.removeFromFront();
   public unshift = (value: T) => this.addToFront(value);
-
   public addToEnd = (value: T) => {
     const item = new LinkedListItem(value);
     item.previous = this.tail;
@@ -39,7 +32,6 @@ export class LinkedList<T> implements Iterable<T> {
     this.tail = item;
     ++this.length;
   };
-
   public addToFront = (value: T) => {
     const item = new LinkedListItem(value);
     item.next = this.head;
@@ -51,7 +43,6 @@ export class LinkedList<T> implements Iterable<T> {
     this.head = item;
     ++this.length;
   };
-
   public removeFromEnd = () => {
     if (isNone(this.tail)) {
       return;
@@ -63,7 +54,6 @@ export class LinkedList<T> implements Iterable<T> {
     }
     return item.value;
   };
-
   public removeFromFront = () => {
     if (isNone(this.head)) {
       return;
@@ -75,15 +65,13 @@ export class LinkedList<T> implements Iterable<T> {
     }
     return item.value;
   };
-
   public drain(effect: (value: T) => void) {
     let item: Option<T>;
     // tslint:disable-next-line: no-conditional-assignment
-    while (item = this.removeFromFront()) {
+    while ((item = this.removeFromFront())) {
       effect(item);
     }
   }
-
   public *[Symbol.iterator]() {
     for (let i = this.head; isSome(i); i = i.next) {
       yield i.value;
