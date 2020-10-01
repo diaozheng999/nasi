@@ -4,6 +4,7 @@ module.exports = {
   input: "dist/esm/index.js",
   plugins: [terser()],
   external: [
+    "lodash",
     "lodash/clamp",
     "lodash/has",
     "lodash/isNumber",

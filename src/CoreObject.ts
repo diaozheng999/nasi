@@ -5,9 +5,9 @@
  * @barrel export all
  */
 
-import { Unconstrained } from './Types';
+import { Unconstrained, AnyObject } from './Types';
 
-export function *keys<K extends {}>(obj: K): IterableIterator<keyof K> {
+export function *keys<K extends AnyObject>(obj: K): IterableIterator<keyof K> {
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
       yield key;
@@ -15,7 +15,7 @@ export function *keys<K extends {}>(obj: K): IterableIterator<keyof K> {
   }
 }
 
-export function split<K extends {}, S extends keyof K>(
+export function split<K extends AnyObject, S extends keyof K>(
   obj: K,
   keysToKeep: readonly S[],
 ): readonly [ Pick<K, S>, Pick<K, Exclude<keyof K, S>> ] {
@@ -26,8 +26,10 @@ export function split<K extends {}, S extends keyof K>(
 
   for (const key of keys(obj)) {
     if (toKeep.has(key)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       take[key] = obj[key];
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       drop[key] = obj[key];
     }
   }

@@ -123,8 +123,8 @@ test("semaphore timeout rejection", async () => {
 
   const tryWait = semaphore.wait(10);
 
-  expect(f1).resolves.toBeUndefined();
-  expect(tryWait).rejects.toBeUndefined();
+  void expect(f1).resolves.toBeUndefined();
+  void expect(tryWait).rejects.toBeUndefined();
 
   try {
     const p = await f1;
@@ -150,14 +150,14 @@ test("semaphore success", () => {
   const tryWait = semaphore.wait(100);
   jest.runAllTimers();
 
-  expect(f1).resolves.toBeUndefined();
-  expect(tryWait).resolves.toBeUndefined();
+  void expect(f1).resolves.toBeUndefined();
+  void expect(tryWait).resolves.toBeUndefined();
   jest.useRealTimers();
 });
 
 test("semaphore immediate reject", async () => {
   const semaphore = new Semaphore(1);
-  semaphore.wait();
+  void semaphore.wait();
   await expect(semaphore.wait(-1)).rejects.toBeUndefined();
 });
 

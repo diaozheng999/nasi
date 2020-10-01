@@ -5,6 +5,11 @@
  */
 
 // @barrel export all
+
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import uniq from "lodash/uniq";
 import * as F from "./F";
 import * as Option from "./Option";
@@ -206,15 +211,21 @@ export function branch<T>(
     if (predicate(arg)) {
       return ifTrue(arg);
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       return ifFalse(arg);
     }
   };
 }
-export function exists<T extends {}>(key: keyof T): Predicate<T> {
+export function exists<T extends Record<string, unknown>>(
+  key: keyof T,
+): Predicate<T> {
   return (obj: T) => Option.isSome(Option.property(obj, key));
 }
 
-export function existsWith<T extends {}, K extends keyof T>(
+export function existsWith<
+  T extends Record<string, unknown>,
+  K extends keyof T
+>(
   key: K,
   predicate: Predicate<T[K]>,
 ): Predicate<T> {

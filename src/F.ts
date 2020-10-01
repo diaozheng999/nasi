@@ -6,6 +6,10 @@
 
 // @barrel export all
 
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { isNone, Type as Option, value_ } from "./Option";
 import { AnyArray, Unconstrained } from './Types';
 
