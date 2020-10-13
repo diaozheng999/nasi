@@ -1,4 +1,4 @@
-## 1.2.8
+## 1.2.9
 - Update `typescript` to `4.0.3`.
 - Include experimental Deno rewrite in Otah
 - Add `clone` function to `Box` to allow React/Redux state updates.
