@@ -139,3 +139,70 @@ test("iterator add and remove one item", () => {
   }
   expect(expectation).toBe(2);
 });
+
+test("addBefore", () => {
+  const list = new LinkedList();
+  list.push(1);
+  list.push(2);
+  list.push(3);
+  list.push(4);
+
+  list.getHead()?.next?.next?.addBefore(5);
+
+  expect(Array.from(list)).toStrictEqual([1,2,5,3,4]);
+  expect(list.length).toBe(5);
+});
+
+test("addAfter", () => {
+  const list = new LinkedList();
+  list.push(1);
+  list.push(2);
+  list.push(3);
+  list.push(4);
+
+  list.getHead()?.next?.next?.addAfter(5);
+
+  expect(Array.from(list)).toStrictEqual([1,2,3,5,4]);
+  expect(list.length).toBe(5);
+});
+
+test("remove node", () => {
+  const list = new LinkedList();
+  list.push(1);
+  list.push(2);
+  list.push(3);
+  list.push(4);
+
+  list.getHead()?.next?.next?.popSelf();
+
+  expect(Array.from(list)).toStrictEqual([1,2,4]);
+  expect(list.length).toBe(3);
+});
+
+test("remove popped node", () => {
+  const list = new LinkedList();
+  list.push(1);
+  list.push(2);
+  list.push(3);
+  list.push(4);
+
+  const node = list.getHead()?.next?.next?.popSelf();
+  node?.popSelf();
+
+  expect(Array.from(list)).toStrictEqual([1,2,4]);
+  expect(list.length).toBe(3);
+});
+
+test("add to popped node", () => {
+  const list = new LinkedList();
+  list.push(1);
+  list.push(2);
+  list.push(3);
+  list.push(4);
+
+  const node = list.getHead()?.next?.next?.popSelf();
+  node?.addAfter(5);
+
+  expect(Array.from(list)).toStrictEqual([1,2,4]);
+  expect(list.length).toBe(3);
+});

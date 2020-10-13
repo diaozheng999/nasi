@@ -23,60 +23,89 @@ export class LinkedList<T> implements Iterable<T> {
     return this.head;
   }
 
-  public push = (value: T) => this.addToEnd(value);
-  public pop = () => this.removeFromEnd();
-  public shift = () => this.removeFromFront();
-  public unshift = (value: T) => this.addToFront(value);
+  public push = (value: T): void => this.addToEnd(value);
+  public pop = (): Option<T> => this.removeFromEnd();
+  public shift = (): Option<T> => this.removeFromFront();
+  public unshift = (value: T): void => this.addToFront(value);
 
-  public addToEnd = (value: T) => {
-    const item = new LinkedListItem(value);
-    item.previous = this.tail;
-    if (isSome(this.tail)) {
-      this.tail.next = item;
-    } else {
-      this.head = item;
+  #remove = (value: LinkedListItem<T>, list?: LinkedList<T>) => {
+    if (list !== this) {
+      return;
     }
-    this.tail = item;
-    ++this.length;
+
+    if (!--this.length) {
+      this.head = undefined;
+      this.tail = undefined;
+    } else if (value === this.head) {
+      this.head = value.next;
+    } else if (value === this.tail) {
+      this.tail = value.previous;
+    }
   }
 
-  public addToFront = (value: T) => {
-    const item = new LinkedListItem(value);
-    item.next = this.head;
-    if (isSome(this.head)) {
-      this.head.previous = item;
-    } else {
-      this.tail = item;
+  #add = (next: LinkedListItem<T>, node: LinkedListItem<T>, list?: LinkedList<T>) => {
+    if (list !== this) {
+      return;
     }
+
+    ++this.length;
+
+    if (node === this.tail) {
+      this.tail = next;
+    }
+    if (next === this.head) {
+      this.head = node;
+    }
+  }
+
+  #addOne = (value: T): void => {
+    const item = new LinkedListItem(value, this, this.#remove, this.#add);
     this.head = item;
-    ++this.length;
+    this.tail = item;
+    this.length = 1;
   }
 
-  public removeFromEnd = () => {
+  public addToEnd = (value: T): void => {
+    if (isSome(this.tail)) {
+      this.tail.addAfter(value);
+    } else {
+      this.#addOne(value);
+    }
+  }
+
+  public addToFront = (value: T): void => {
+    if (isSome(this.head)) {
+      this.head.addBefore(value);
+    } else {
+      this.#addOne(value);
+    }
+  }
+
+  public recomputeLength = (): number => {
+    this.length = 0;
+    for (let i = this.head; isSome(i); i = i.next) {
+      ++this.length;
+    }
+    return this.length;
+  }
+
+  public removeFromEnd = (): Option<T> => {
     if (isNone(this.tail)) {
       return;
     }
     const item = this.tail.popSelf();
-    this.tail = item.previous;
-    if (--this.length === 0) {
-      this.head = undefined;
-    }
     return item.value;
   }
 
-  public removeFromFront = () => {
+  public removeFromFront = (): Option<T> => {
     if (isNone(this.head)) {
       return;
     }
     const item = this.head.popSelf();
-    this.head = item.next;
-    if (--this.length === 0) {
-      this.tail = undefined;
-    }
     return item.value;
   }
 
-  public drain(effect: (value: T) => void) {
+  public drain(effect: (value: T) => void): void {
     let item: Option<T>;
     // tslint:disable-next-line: no-conditional-assignment
     while (item = this.removeFromFront()) {
@@ -84,7 +113,7 @@ export class LinkedList<T> implements Iterable<T> {
     }
   }
 
-  public *[Symbol.iterator]() {
+  public *[Symbol.iterator](): Iterator<T> {
     for (let i = this.head; isSome(i); i = i.next) {
       yield i.value;
     }
