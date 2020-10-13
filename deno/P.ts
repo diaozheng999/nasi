@@ -177,17 +177,20 @@ export function branch<T>(
     if (predicate(arg)) {
       return ifTrue(arg);
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       return ifFalse(arg);
     }
   };
 }
-export function exists<T extends {}>(key: keyof T): Predicate<T> {
+export function exists<T extends Record<string, unknown>>(
+  key: keyof T
+): Predicate<T> {
   return (obj: T) => Option.isSome(Option.property(obj, key));
 }
-export function existsWith<T extends {}, K extends keyof T>(
-  key: K,
-  predicate: Predicate<T[K]>
-): Predicate<T> {
+export function existsWith<
+  T extends Record<string, unknown>,
+  K extends keyof T
+>(key: K, predicate: Predicate<T[K]>): Predicate<T> {
   return (obj: T) =>
     Option.mapChoice(Option.property(obj, key), predicate, false);
 }

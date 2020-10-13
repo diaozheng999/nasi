@@ -37,12 +37,12 @@ import { Unique, UniqueValue } from "./Unique.ts";
 import { Unit } from "./Unit.ts";
 import * as UnitConversion from "./UnitConversion.ts";
 import * as Unsafe from "./Unsafe.ts";
-export const assert = Contract.assert;
 export const ensures = Contract.ensures;
 export const isSerialisable = Contract.isSerialisable;
 export const assertNever = Contract.assertNever;
 export const requires = Contract.requires;
 export const invariant = Contract.invariant;
+export const assert = Contract.assert;
 export const hash = Hashing.hash;
 export {
   Box,

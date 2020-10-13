@@ -29,7 +29,9 @@ function isCustomDisposable(
 ): disposable is ICustomDisposable {
   const suspect: Unconstrained = disposable;
   return (
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     typeof suspect[IS_DISPOSED] !== "undefined" &&
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     typeof suspect[DISPOSE] === "function"
   );
 }
@@ -42,7 +44,9 @@ export class Disposable {
       typeof disposable === "object" &&
       disposable !== null && // ye olde JavaScript bug
       (disposable instanceof Disposable ||
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         typeof disposable[DISPOSE] === "function" ||
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         typeof disposable[DISPOSABLE] !== "undefined")
     ) {
       Disposable.dispose(disposable);

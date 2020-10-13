@@ -23,7 +23,7 @@ import isString from "https://deno.land/x/lodash/isString.js";
 import isBoolean from "https://deno.land/x/lodash/isBoolean.js";
 import isArrayLike from "https://deno.land/x/lodash/isArrayLike.js";
 import * as Integer from "./Integer.ts";
-import { Unconstrained } from "./Types.ts";
+import { Unconstrained, AnyObject } from "./Types.ts";
 /**
  * A context that serves as the basis for our universal hashing algorithm.
  * The hashes generated are universal, and are solely deterministic based on
@@ -518,7 +518,7 @@ function typedKeyof<T>(obj: T): Array<keyof T> {
  * @param ctx if provided, this context will be used. Otherwise, will use the
  * current stored context.
  */
-export function hashObject<K extends {}>(
+export function hashObject<K extends AnyObject>(
   obj: K,
   ctx: Context = context
 ): Integer.Type {

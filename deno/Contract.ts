@@ -88,6 +88,7 @@ export function assert<T, K extends T>(
  * @param inv The invariant function. If not an arrow function, the this pointer
  * is bound to the current instance/static object.
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function requires<T extends {}, TArgs extends AnyArray>(
   inv: (this: T, ...args: TArgs) => boolean,
   message?: string
@@ -139,6 +140,7 @@ export function requires<T extends {}, TArgs extends AnyArray>(
  * @param inv The invariant function. If not an arrow function, the this pointer
  * is bound to the current instance/static object.
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function ensures<T extends {}, TReturn>(
   inv: (this: T, returnValue: TReturn) => boolean,
   message?: string

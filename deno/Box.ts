@@ -30,7 +30,9 @@ export class Box<T> implements Iterable<T> {
     this.value = value;
     return previousValue;
   }
-  public clone(value: T): Box<T> {
+  public clone(effect?: (value: T) => void): Box<T> {
+    const value = this.valueOf();
+    effect?.(value);
     return new Box(value);
   }
   public *[Symbol.iterator]() {
